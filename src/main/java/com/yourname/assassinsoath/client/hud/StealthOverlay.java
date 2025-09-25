@@ -50,6 +50,9 @@ public final class StealthOverlay {
     private static final float SCALE_BASE = 0.025f;
     private static final float SCALE_MIN = 0.4f;
     private static final float SCALE_MAX = 3.0f;
+    private static final double EPIC_FIGHT_ICON_GAP = 0.05D;
+    private static final double MIN_ANCHOR_MARGIN = 0.1D;
+    private static final float ICON_BASE_SIZE = 19.2f;
 
     static {
         for (int i = 5; i <= 90; i += 5) {
@@ -77,20 +80,18 @@ public final class StealthOverlay {
         PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
 
-        float partialTick = Minecraft.getInstance().getFrameTime();
-        double verticalOffset = resolveVerticalOffset(entity, partialTick);
+        float uniformScale = computeUniformScale(entity);
+        double verticalOffset = resolveVerticalOffset(entity, event.getPartialTick(), uniformScale);
         poseStack.translate(0.0D, verticalOffset, 0.0D);
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         poseStack.mulPose(dispatcher.cameraOrientation());
 
-        float uniformScale = computeUniformScale(entity);
         poseStack.scale(-uniformScale, -uniformScale, uniformScale);
 
         int packedLight = LightTexture.FULL_BRIGHT;
         MultiBufferSource buffers = event.getMultiBufferSource();
         VertexConsumer iconConsumer = buffers.getBuffer(RenderType.entityTranslucent(icon));
-        float baseSize = 19.2f;
-        drawTexturedQuad(poseStack, iconConsumer, packedLight, baseSize, baseSize, 0f, 1f, 1f, 1f, 1f);
+        drawTexturedQuad(poseStack, iconConsumer, packedLight, ICON_BASE_SIZE, ICON_BASE_SIZE, 0f, 1f, 1f, 1f, 1f);
 
         poseStack.popPose();
         RENDERED_THIS_FRAME.add(entity.getId());
@@ -143,16 +144,15 @@ public final class StealthOverlay {
             double y = Mth.lerp(event.getPartialTick(), living.yo, living.getY()) - cameraPos.y;
             double z = Mth.lerp(event.getPartialTick(), living.zo, living.getZ()) - cameraPos.z;
             poseStack.translate(x, y, z);
-            double verticalOffset = resolveVerticalOffset(living, event.getPartialTick());
+            float uniformScale = computeUniformScale(living);
+            double verticalOffset = resolveVerticalOffset(living, event.getPartialTick(), uniformScale);
             poseStack.translate(0.0D, verticalOffset, 0.0D);
             poseStack.mulPose(dispatcher.cameraOrientation());
 
-            float uniformScale = computeUniformScale(living);
             poseStack.scale(-uniformScale, -uniformScale, uniformScale);
 
             VertexConsumer iconConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(icon));
-            float baseSize = 19.2f;
-            drawTexturedQuad(poseStack, iconConsumer, LightTexture.FULL_BRIGHT, baseSize, baseSize, 0f, 1f, 1f, 1f, 1f);
+            drawTexturedQuad(poseStack, iconConsumer, LightTexture.FULL_BRIGHT, ICON_BASE_SIZE, ICON_BASE_SIZE, 0f, 1f, 1f, 1f, 1f);
             poseStack.popPose();
             renderedAny = true;
         }
@@ -202,9 +202,14 @@ public final class StealthOverlay {
         return QUESTION_ICONS.get(percent);
     }
 
-    private static double resolveVerticalOffset(LivingEntity entity, float partialTick) {
-        var epicFightOffset = EpicFightHealthBarProbe.resolveBillboardOffset(entity, partialTick);
-        return epicFightOffset.isPresent() ? epicFightOffset.getAsDouble() : computeVerticalOffset(entity);
+    private static double resolveVerticalOffset(LivingEntity entity, float partialTick, float uniformScale) {
+        var epicFightTop = EpicFightHealthBarProbe.resolveHealthBarTop(entity, partialTick);
+        if (epicFightTop.isPresent()) {
+            double iconHeight = ICON_BASE_SIZE * uniformScale;
+            double anchor = Math.max(epicFightTop.getAsDouble(), entityHeight(entity) + MIN_ANCHOR_MARGIN);
+            return anchor + iconHeight + EPIC_FIGHT_ICON_GAP;
+        }
+        return computeVerticalOffset(entity);
     }
 
     private static double computeVerticalOffset(LivingEntity entity) {

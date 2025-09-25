@@ -28,8 +28,12 @@ public final class EpicFightHealthBarProbe {
     private static final Object HEALTH_BAR_INSTANCE;
     private static final Method SHOULD_DRAW_METHOD;
     private static final Field TRACKING_ENTITIES_FIELD;
-    private static final double ICON_GAP_ABOVE_BAR = 0.5D;
+    private static final double DEFAULT_BAR_BASE_OFFSET = 0.25D;
+    private static final double DEFAULT_BAR_HEIGHT = 0.35D;
     private static final AtomicBoolean LOGGED_FAILURE = new AtomicBoolean(false);
+    private static final AtomicBoolean LOGGED_TRACKING_WARNING = new AtomicBoolean(false);
+    private static volatile Method TRACKING_HEIGHT_METHOD;
+    private static volatile Field TRACKING_HEIGHT_FIELD;
 
     static {
         Method getEntityPatch = null;
@@ -70,7 +74,7 @@ public final class EpicFightHealthBarProbe {
     private EpicFightHealthBarProbe() {
     }
 
-    public static OptionalDouble resolveBillboardOffset(LivingEntity entity, float partialTick) {
+    public static OptionalDouble resolveHealthBarTop(LivingEntity entity, float partialTick) {
         if (!AVAILABLE) {
             return OptionalDouble.empty();
         }
@@ -91,8 +95,21 @@ public final class EpicFightHealthBarProbe {
                 return OptionalDouble.empty();
             }
 
-            double offset = entity.getBbHeight() + 0.25D + ICON_GAP_ABOVE_BAR;
-            return OptionalDouble.of(offset);
+            double entityHeight = entity.getBbHeight();
+            double base = entityHeight + DEFAULT_BAR_BASE_OFFSET;
+            OptionalDouble trackedHeight = readTrackedBarHeight(entity);
+            double barTop;
+            if (trackedHeight.isPresent()) {
+                double tracked = trackedHeight.getAsDouble();
+                if (tracked > entityHeight + DEFAULT_BAR_BASE_OFFSET) {
+                    barTop = tracked;
+                } else {
+                    barTop = base + tracked;
+                }
+            } else {
+                barTop = base + DEFAULT_BAR_HEIGHT;
+            }
+            return OptionalDouble.of(barTop);
         } catch (IllegalAccessException | InvocationTargetException reflectionFailure) {
             if (LOGGED_FAILURE.compareAndSet(false, true)) {
                 LOGGER.warn("Failed to query Epic Fight health bar state: {}", reflectionFailure.toString());
@@ -102,11 +119,152 @@ public final class EpicFightHealthBarProbe {
     }
 
     @SuppressWarnings("unchecked")
+    private static OptionalDouble readTrackedBarHeight(LivingEntity entity)
+            throws IllegalAccessException {
+        if (TRACKING_ENTITIES_FIELD == null) {
+            return OptionalDouble.empty();
+        }
+        Map<LivingEntity, ?> map = (Map<LivingEntity, ?>) TRACKING_ENTITIES_FIELD.get(HEALTH_BAR_INSTANCE);
+        Object data = map.get(entity);
+        if (data == null) {
+            return OptionalDouble.empty();
+        }
+
+        if (data instanceof Number number) {
+            return OptionalDouble.of(number.doubleValue());
+        }
+
+        Number resolved = tryResolveTrackingHeight(data);
+        if (resolved != null) {
+            return OptionalDouble.of(resolved.doubleValue());
+        }
+
+        if (LOGGED_TRACKING_WARNING.compareAndSet(false, true)) {
+            LOGGER.debug("Epic Fight tracking data type {} unsupported for health bar alignment", data.getClass().getName());
+        }
+        return OptionalDouble.empty();
+    }
+
+    @SuppressWarnings("unchecked")
     private static boolean isEntityTracked(LivingEntity entity) throws IllegalAccessException {
         if (TRACKING_ENTITIES_FIELD == null) {
             return false;
         }
         Map<LivingEntity, ?> map = (Map<LivingEntity, ?>) TRACKING_ENTITIES_FIELD.get(HEALTH_BAR_INSTANCE);
         return map.containsKey(entity);
+    }
+
+    private static Number tryResolveTrackingHeight(Object data) {
+        try {
+            Method method = TRACKING_HEIGHT_METHOD;
+            if (method != null) {
+                Object value = method.invoke(data);
+                if (value instanceof Number number) {
+                    return number;
+                }
+            }
+        } catch (IllegalAccessException | InvocationTargetException ignored) {
+            // fall through and try field access
+        }
+
+        try {
+            Field field = TRACKING_HEIGHT_FIELD;
+            if (field != null) {
+                Object value = field.get(data);
+                if (value instanceof Number number) {
+                    return number;
+                }
+            }
+        } catch (IllegalAccessException ignored) {
+            // best effort only
+        }
+
+        detectTrackingHeightAccessors(data);
+
+        try {
+            Method method = TRACKING_HEIGHT_METHOD;
+            if (method != null) {
+                Object value = method.invoke(data);
+                if (value instanceof Number number) {
+                    return number;
+                }
+            }
+        } catch (IllegalAccessException | InvocationTargetException ignored) {
+            // give up and fall back to field handling below
+        }
+
+        try {
+            Field field = TRACKING_HEIGHT_FIELD;
+            if (field != null) {
+                Object value = field.get(data);
+                if (value instanceof Number number) {
+                    return number;
+                }
+            }
+        } catch (IllegalAccessException ignored) {
+            // nothing else to try
+        }
+        return null;
+    }
+
+    private static void detectTrackingHeightAccessors(Object data) {
+        if (TRACKING_HEIGHT_METHOD != null || TRACKING_HEIGHT_FIELD != null) {
+            return;
+        }
+
+        for (Method method : data.getClass().getDeclaredMethods()) {
+            if (method.getParameterCount() == 0 && Number.class.isAssignableFrom(wrapPrimitive(method.getReturnType()))) {
+                String lower = method.getName().toLowerCase();
+                if (lower.contains("height") || lower.contains("offset") || lower.contains("y")) {
+                    method.setAccessible(true);
+                    TRACKING_HEIGHT_METHOD = method;
+                    return;
+                }
+            }
+        }
+
+        for (Field field : data.getClass().getDeclaredFields()) {
+            if (Number.class.isAssignableFrom(wrapPrimitive(field.getType()))) {
+                String lower = field.getName().toLowerCase();
+                if (lower.contains("height") || lower.contains("offset") || lower.contains("y")) {
+                    field.setAccessible(true);
+                    TRACKING_HEIGHT_FIELD = field;
+                    return;
+                }
+            }
+        }
+
+        for (Field field : data.getClass().getDeclaredFields()) {
+            if (Number.class.isAssignableFrom(wrapPrimitive(field.getType()))) {
+                field.setAccessible(true);
+                TRACKING_HEIGHT_FIELD = field;
+                return;
+            }
+        }
+    }
+
+    private static Class<?> wrapPrimitive(Class<?> type) {
+        if (!type.isPrimitive()) {
+            return type;
+        }
+        if (type == float.class) {
+            return Float.class;
+        }
+        if (type == double.class) {
+            return Double.class;
+        }
+        if (type == int.class) {
+            return Integer.class;
+        }
+        if (type == long.class) {
+            return Long.class;
+        }
+        if (type == short.class) {
+            return Short.class;
+        }
+        if (type == byte.class) {
+            return Byte.class;
+        }
+        return type;
     }
 }

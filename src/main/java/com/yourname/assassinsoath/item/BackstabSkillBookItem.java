@@ -16,6 +16,7 @@ import yesman.epicfight.world.item.SkillBookItem;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class BackstabSkillBookItem extends SkillBookItem {
     private static final ResourceLocation BACKSTAB_SKILL = ResourceLocation.fromNamespaceAndPath(
@@ -26,31 +27,34 @@ public class BackstabSkillBookItem extends SkillBookItem {
     }
 
     @Override
-    public ItemStack getDefaultInstance() {
+    public @NotNull ItemStack getDefaultInstance() {
         return ensureSkill(super.getDefaultInstance());
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity,
+                              int slotId, boolean isSelected) {
         ensureSkill(stack);
         super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
-    public void onCraftedBy(ItemStack stack, Level level, Player player) {
+    public void onCraftedBy(@NotNull ItemStack stack, @NotNull Level level, @NotNull Player player) {
         ensureSkill(stack);
         super.onCraftedBy(stack, level, player);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
+                                                           @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ensureSkill(stack);
         return super.use(level, player, hand);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level,
+                                @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         ensureSkill(stack);
         super.appendHoverText(stack, level, tooltip, flag);
     }

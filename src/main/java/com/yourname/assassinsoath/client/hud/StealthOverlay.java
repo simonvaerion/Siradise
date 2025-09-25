@@ -43,10 +43,9 @@ public final class StealthOverlay {
     private static final Set<Integer> RENDERED_THIS_FRAME = new HashSet<>();
     private static final long DATA_FADE_DELAY_MS = 3000L;
     private static final long DATA_FADE_DURATION_MS = 3000L;
-    private static final double ICON_EXTRA_HEIGHT_BASE = 1.75D;
-    private static final double ICON_EXTRA_HEIGHT_SCALE = 0.75D;
+    private static final double ICON_EXTRA_HEIGHT_BASE = 2.25D;
+    private static final double ICON_EXTRA_HEIGHT_SCALE = 0.9D;
     private static final float REFERENCE_HEIGHT = 1.95f;
-    private static final float REFERENCE_WIDTH = 0.6f;
     private static final float SCALE_BASE = 0.025f;
     private static final float SCALE_MIN = 0.4f;
     private static final float SCALE_MAX = 3.0f;
@@ -110,7 +109,7 @@ public final class StealthOverlay {
         EntityRenderDispatcher dispatcher = minecraft.getEntityRenderDispatcher();
         var camera = minecraft.gameRenderer.getMainCamera();
         var cameraPos = camera.getPosition();
-        PoseStack poseStack = event.getPoseStack();
+        PoseStack poseStack = new PoseStack();
         MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
         long now = System.currentTimeMillis();
         boolean renderedAny = false;
@@ -208,20 +207,13 @@ public final class StealthOverlay {
 
     private static float computeUniformScale(LivingEntity entity) {
         float heightScale = Mth.clamp(entityHeight(entity) / REFERENCE_HEIGHT, SCALE_MIN, SCALE_MAX);
-        float widthScale = Mth.clamp(entityWidth(entity) / REFERENCE_WIDTH, SCALE_MIN, SCALE_MAX);
-        return SCALE_BASE * Math.max(heightScale, widthScale);
+        return SCALE_BASE * heightScale;
     }
 
     private static float entityHeight(LivingEntity entity) {
         float boundingHeight = entity.getBbHeight();
         float defaultHeight = entity.getType().getDimensions().height();
         return Math.max(boundingHeight, defaultHeight);
-    }
-
-    private static float entityWidth(LivingEntity entity) {
-        float boundingWidth = entity.getBbWidth();
-        float defaultWidth = entity.getType().getDimensions().width();
-        return Math.max(boundingWidth, defaultWidth);
     }
 
     private static void drawTexturedQuad(PoseStack poseStack, VertexConsumer consumer, int packedLight,

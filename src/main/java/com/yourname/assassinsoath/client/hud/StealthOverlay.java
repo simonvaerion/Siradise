@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yourname.assassinsoath.AssassinsOath;
 import com.yourname.assassinsoath.ai.StealthAwarenessTracker;
+import com.yourname.assassinsoath.client.integration.EpicFightHealthBarProbe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -76,7 +77,8 @@ public final class StealthOverlay {
         PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
 
-        double verticalOffset = computeVerticalOffset(entity);
+        float partialTick = Minecraft.getInstance().getFrameTime();
+        double verticalOffset = resolveVerticalOffset(entity, partialTick);
         poseStack.translate(0.0D, verticalOffset, 0.0D);
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         poseStack.mulPose(dispatcher.cameraOrientation());
@@ -141,7 +143,8 @@ public final class StealthOverlay {
             double y = Mth.lerp(event.getPartialTick(), living.yo, living.getY()) - cameraPos.y;
             double z = Mth.lerp(event.getPartialTick(), living.zo, living.getZ()) - cameraPos.z;
             poseStack.translate(x, y, z);
-            poseStack.translate(0.0D, computeVerticalOffset(living), 0.0D);
+            double verticalOffset = resolveVerticalOffset(living, event.getPartialTick());
+            poseStack.translate(0.0D, verticalOffset, 0.0D);
             poseStack.mulPose(dispatcher.cameraOrientation());
 
             float uniformScale = computeUniformScale(living);
@@ -197,6 +200,11 @@ public final class StealthOverlay {
         int percent = (int) (Math.round(detection * 100f / 5f) * 5);
         percent = Mth.clamp(percent, 5, 90);
         return QUESTION_ICONS.get(percent);
+    }
+
+    private static double resolveVerticalOffset(LivingEntity entity, float partialTick) {
+        var epicFightOffset = EpicFightHealthBarProbe.resolveBillboardOffset(entity, partialTick);
+        return epicFightOffset.isPresent() ? epicFightOffset.getAsDouble() : computeVerticalOffset(entity);
     }
 
     private static double computeVerticalOffset(LivingEntity entity) {

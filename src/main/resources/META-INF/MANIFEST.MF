@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: assassinsoath
+Specification-Vendor: Your Name
+Specification-Version: 1
+Implementation-Title: the_assassin's_oath
+Implementation-Version: 0.1.0
+Implementation-Vendor: Your Name
+Implementation-Timestamp: 2025-09-24T23:24:22+0800
+

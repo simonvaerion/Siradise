@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="assassinsoath"
+version="0.1.0"
+displayName="The Assassin's Oath"
+authors="Your Name"
+description="Core stealth toys: smoke bomb and backstab."
+
+[[dependencies.assassinsoath]]
+   modId="forge"
+   mandatory=true
+   versionRange="[47,)"
+   ordering="NONE"
+   side="BOTH"
+
+[[dependencies.assassinsoath]]
+   modId="minecraft"
+   mandatory=true
+   versionRange="[1.20.1,1.21)"
+   ordering="NONE"
+   side="BOTH"
+
+[[dependencies.assassinsoath]]
+   modId="epicfight"
+   mandatory=true
+   versionRange="*"
+   ordering="NONE"
+   side="BOTH"

@@ -44,14 +44,14 @@ public final class StealthOverlay {
     private static final Set<Integer> RENDERED_THIS_FRAME = new HashSet<>();
     private static final long DATA_FADE_DELAY_MS = 3000L;
     private static final long DATA_FADE_DURATION_MS = 3000L;
-    private static final double ICON_EXTRA_HEIGHT_BASE = 3.25D;
-    private static final double ICON_EXTRA_HEIGHT_SCALE = 1.25D;
+    private static final double ICON_EXTRA_HEIGHT_BASE = 4.25D;
+    private static final double ICON_EXTRA_HEIGHT_SCALE = 1.7D;
     private static final float REFERENCE_HEIGHT = 1.95f;
     private static final float SCALE_BASE = 0.025f;
     private static final float SCALE_MIN = 0.8f;
     private static final float SCALE_MAX = 3.2f;
     private static final float ICON_SCALE_MULTIPLIER = 1.4f;
-    private static final double EPIC_FIGHT_ICON_GAP = 0.35D * (4.0D / 9.0D);
+    private static final double EPIC_FIGHT_ICON_GAP = 0.4D;
     private static final double MIN_ANCHOR_MARGIN = 0.1D;
     private static final float ICON_BASE_SIZE = 19.2f;
 
@@ -65,7 +65,7 @@ public final class StealthOverlay {
     public static void updateMobAwareness(int entityId, float detection, int stage) {
         float clampedDetection = Mth.clamp(detection, 0f, 1f);
         int derivedStage = StealthAwarenessTracker.stageFor(clampedDetection);
-        int stageForStore = Math.min(stage, derivedStage);
+        int stageForStore = Math.max(stage, derivedStage);
         MOB_DATA.put(entityId, new MobHudData(clampedDetection, stageForStore, System.currentTimeMillis()));
     }
 
@@ -229,7 +229,7 @@ public final class StealthOverlay {
 
     private static float entityHeight(LivingEntity entity) {
         float boundingHeight = entity.getBbHeight();
-        float defaultHeight = entity.getType().getDimensions().height();
+        float defaultHeight = entity.getType().getDimensions().height;
         return Math.max(boundingHeight, defaultHeight);
     }
 
@@ -279,4 +279,3 @@ public final class StealthOverlay {
         }
     }
 }
-

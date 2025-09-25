@@ -15,8 +15,9 @@ import java.util.OptionalDouble;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Small reflective bridge that inspects Epic Fight's HUD renderer so the stealth overlay can align
- * its billboards with the combat health bar when the mod is present.
+ * Reflective bridge that inspects Epic Fight's HUD renderer so the stealth overlay can align icons
+ * with the combat health bar when that mod is present. The integration is completely optional and
+ * falls back to heuristic offsets when Epic Fight is missing or changes its internals.
  */
 public final class EpicFightHealthBarProbe {
     private static final Logger LOGGER = LogUtils.getLogger();

@@ -1,19 +1,18 @@
 package com.yourname.assassinsoath.ai;
 
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
-
 /**
- * Tracks how aware mobs are of stealthy players and exposes convenience
- * helpers for manipulating the internal awareness state. This reimplementation
- * mirrors the original compiled logic but allows awareness stages to downgrade
- * once detection values fall back below the alert threshold.
+ * Tracks how aware mobs are of stealthy players and exposes convenience helpers for manipulating
+ * the internal awareness state. This mirrors the compiled logic from the original release but
+ * ensures alert stages automatically downgrade once detection falls back below their thresholds.
  */
 public final class StealthAwarenessTracker {
     private static final Map<Mob, AwarenessState> MOB_STATE = new WeakHashMap<>();
@@ -41,19 +40,16 @@ public final class StealthAwarenessTracker {
     }
 
     public static void update(Mob mob, Player player, float detection, int stage) {
-        // The stage parameter is kept for call-site compatibility but the stored stage is now
-        // derived solely from the latest detection sample.
         AwarenessState state = ensure(mob);
         state.targetId = player.getUUID();
         state.lastKnownPos = player.position();
 
-        float newDetection = Math.max(0.0f, Math.min(1.0f, detection));
-        state.detection = newDetection;
+        float clampedDetection = Math.max(0.0f, Math.min(1.0f, detection));
+        state.detection = clampedDetection;
 
-        // Always derive the stored awareness tier from the current detection value so
-        // mobs only enter their alert behaviours once the visibility meter is full.
-        int detectionStage = stageFor(newDetection);
-        state.stage = detectionStage;
+        // Always derive the stored stage from the most recent detection so mobs
+        // only enter alert behaviours once the visibility meter is truly full.
+        state.stage = stageFor(clampedDetection);
         state.forgetTicks = Math.max(state.forgetTicks, FORGET_DURATION_TICKS);
         state.soundFocusTicks = Math.max(state.soundFocusTicks, FORGET_DURATION_TICKS);
     }

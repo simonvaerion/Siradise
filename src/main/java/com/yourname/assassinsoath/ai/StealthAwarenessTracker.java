@@ -41,15 +41,19 @@ public final class StealthAwarenessTracker {
     }
 
     public static void update(Mob mob, Player player, float detection, int stage) {
+        // The stage parameter is kept for call-site compatibility but the stored stage is now
+        // derived solely from the latest detection sample.
         AwarenessState state = ensure(mob);
         state.targetId = player.getUUID();
         state.lastKnownPos = player.position();
 
-        float newDetection = Math.min(1.0f, Math.max(state.detection, detection));
+        float newDetection = Math.max(0.0f, Math.min(1.0f, detection));
         state.detection = newDetection;
 
-        int impliedStage = Math.max(stage, stageFor(newDetection));
-        state.stage = impliedStage;
+        // Always derive the stored awareness tier from the current detection value so
+        // mobs only enter their alert behaviours once the visibility meter is full.
+        int detectionStage = stageFor(newDetection);
+        state.stage = detectionStage;
         state.forgetTicks = Math.max(state.forgetTicks, FORGET_DURATION_TICKS);
         state.soundFocusTicks = Math.max(state.soundFocusTicks, FORGET_DURATION_TICKS);
     }

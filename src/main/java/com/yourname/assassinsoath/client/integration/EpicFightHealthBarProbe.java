@@ -30,6 +30,7 @@ public final class EpicFightHealthBarProbe {
     private static final Field TRACKING_ENTITIES_FIELD;
     private static final double DEFAULT_BAR_BASE_OFFSET = 0.25D;
     private static final double DEFAULT_BAR_HEIGHT = 0.35D;
+    private static final double MAX_REASONABLE_EXTRA = 6.0D;
     private static final AtomicBoolean LOGGED_FAILURE = new AtomicBoolean(false);
     private static final AtomicBoolean LOGGED_TRACKING_WARNING = new AtomicBoolean(false);
     private static volatile Method TRACKING_HEIGHT_METHOD;
@@ -84,10 +85,12 @@ public final class EpicFightHealthBarProbe {
             return OptionalDouble.empty();
         }
 
+        double fallbackTop = fallbackBarTop(entity);
+
         try {
             Object playerPatch = GET_ENTITY_PATCH.invoke(null, player, LOCAL_PLAYER_PATCH_CLASS);
             if (playerPatch == null) {
-                return OptionalDouble.empty();
+                return OptionalDouble.of(fallbackTop);
             }
             Object entityPatch = GET_ENTITY_PATCH.invoke(null, entity, LIVING_ENTITY_PATCH_CLASS);
             boolean shouldDraw = (Boolean) SHOULD_DRAW_METHOD.invoke(HEALTH_BAR_INSTANCE, entity, entityPatch, playerPatch, partialTick);
@@ -95,26 +98,17 @@ public final class EpicFightHealthBarProbe {
                 return OptionalDouble.empty();
             }
 
-            double entityHeight = entity.getBbHeight();
-            double base = entityHeight + DEFAULT_BAR_BASE_OFFSET;
             OptionalDouble trackedHeight = readTrackedBarHeight(entity);
-            double barTop;
             if (trackedHeight.isPresent()) {
-                double tracked = trackedHeight.getAsDouble();
-                if (tracked > entityHeight + DEFAULT_BAR_BASE_OFFSET) {
-                    barTop = tracked;
-                } else {
-                    barTop = base + tracked;
-                }
-            } else {
-                barTop = base + DEFAULT_BAR_HEIGHT;
+                double normalised = normaliseTrackedHeight(entity, trackedHeight.getAsDouble(), fallbackTop);
+                return OptionalDouble.of(normalised);
             }
-            return OptionalDouble.of(barTop);
+            return OptionalDouble.of(fallbackTop);
         } catch (IllegalAccessException | InvocationTargetException reflectionFailure) {
             if (LOGGED_FAILURE.compareAndSet(false, true)) {
                 LOGGER.warn("Failed to query Epic Fight health bar state: {}", reflectionFailure.toString());
             }
-            return OptionalDouble.empty();
+            return OptionalDouble.of(fallbackTop);
         }
     }
 
@@ -125,6 +119,9 @@ public final class EpicFightHealthBarProbe {
             return OptionalDouble.empty();
         }
         Map<LivingEntity, ?> map = (Map<LivingEntity, ?>) TRACKING_ENTITIES_FIELD.get(HEALTH_BAR_INSTANCE);
+        if (map == null) {
+            return OptionalDouble.empty();
+        }
         Object data = map.get(entity);
         if (data == null) {
             return OptionalDouble.empty();
@@ -151,6 +148,9 @@ public final class EpicFightHealthBarProbe {
             return false;
         }
         Map<LivingEntity, ?> map = (Map<LivingEntity, ?>) TRACKING_ENTITIES_FIELD.get(HEALTH_BAR_INSTANCE);
+        if (map == null) {
+            return false;
+        }
         return map.containsKey(entity);
     }
 
@@ -205,6 +205,38 @@ public final class EpicFightHealthBarProbe {
             // nothing else to try
         }
         return null;
+    }
+
+    private static double fallbackBarTop(LivingEntity entity) {
+        return entity.getBbHeight() + DEFAULT_BAR_BASE_OFFSET + DEFAULT_BAR_HEIGHT;
+    }
+
+    private static double normaliseTrackedHeight(LivingEntity entity, double raw, double fallback) {
+        double entityHeight = entity.getBbHeight();
+        double candidate = raw;
+
+        if (raw <= MAX_REASONABLE_EXTRA) {
+            candidate = entityHeight + DEFAULT_BAR_BASE_OFFSET + raw;
+        } else {
+            double relativeFromFeet = raw - entity.getY();
+            if (relativeFromFeet >= entityHeight && relativeFromFeet <= entityHeight + MAX_REASONABLE_EXTRA) {
+                candidate = relativeFromFeet;
+            } else if (raw >= entityHeight && raw <= entityHeight + MAX_REASONABLE_EXTRA) {
+                candidate = raw;
+            } else {
+                candidate = fallback;
+            }
+        }
+
+        double minAllowed = entityHeight + DEFAULT_BAR_BASE_OFFSET;
+        if (candidate < minAllowed) {
+            candidate = minAllowed;
+        }
+        double maxAllowed = fallback + MAX_REASONABLE_EXTRA;
+        if (candidate > maxAllowed) {
+            candidate = fallback;
+        }
+        return candidate;
     }
 
     private static void detectTrackingHeightAccessors(Object data) {

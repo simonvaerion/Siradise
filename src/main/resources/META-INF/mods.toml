@@ -4,22 +4,22 @@ license="MIT"
 
 [[mods]]
 modId="assassinsoath"
-version="${mod_version}"
+version="0.1.0"
 displayName="The Assassin's Oath"
-authors="${mod_authors}"
-description="${mod_description}"
+authors="Your Name"
+description="Core stealth toys: smoke bomb and backstab."
 
 [[dependencies.assassinsoath]]
    modId="forge"
    mandatory=true
-   versionRange="${forge_version_range}"
+   versionRange="[47,)"
    ordering="NONE"
    side="BOTH"
 
 [[dependencies.assassinsoath]]
    modId="minecraft"
    mandatory=true
-   versionRange="${minecraft_version_range}"
+   versionRange="[1.20.1,1.21)"
    ordering="NONE"
    side="BOTH"
 

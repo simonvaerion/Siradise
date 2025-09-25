@@ -9,9 +9,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public final class ModCreativeTabs {
-    private ModCreativeTabs() {
-    }
-
     public static final DeferredRegister<CreativeModeTab> REGISTER =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AssassinsOath.MODID);
 
@@ -22,4 +19,7 @@ public final class ModCreativeTabs {
                     .map(RegistryObject::get)
                     .forEach(output::accept))
             .build());
+
+    private ModCreativeTabs() {
+    }
 }

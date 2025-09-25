@@ -229,7 +229,7 @@ public final class StealthOverlay {
 
     private static float entityHeight(LivingEntity entity) {
         float boundingHeight = entity.getBbHeight();
-        float defaultHeight = entity.getType().getDimensions().height;
+        float defaultHeight = entity.getType().getDimensions().height();
         return Math.max(boundingHeight, defaultHeight);
     }
 
@@ -279,3 +279,4 @@ public final class StealthOverlay {
         }
     }
 }
+

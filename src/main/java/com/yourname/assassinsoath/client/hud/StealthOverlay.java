@@ -43,8 +43,8 @@ public final class StealthOverlay {
     private static final Set<Integer> RENDERED_THIS_FRAME = new HashSet<>();
     private static final long DATA_FADE_DELAY_MS = 3000L;
     private static final long DATA_FADE_DURATION_MS = 3000L;
-    private static final double ICON_EXTRA_HEIGHT_BASE = 1.35D;
-    private static final double ICON_EXTRA_HEIGHT_SCALE = 0.55D;
+    private static final double ICON_EXTRA_HEIGHT_BASE = 1.75D;
+    private static final double ICON_EXTRA_HEIGHT_SCALE = 0.75D;
     private static final float REFERENCE_HEIGHT = 1.95f;
     private static final float REFERENCE_WIDTH = 0.6f;
     private static final float SCALE_BASE = 0.025f;
@@ -110,7 +110,7 @@ public final class StealthOverlay {
         EntityRenderDispatcher dispatcher = minecraft.getEntityRenderDispatcher();
         var camera = minecraft.gameRenderer.getMainCamera();
         var cameraPos = camera.getPosition();
-        PoseStack poseStack = new PoseStack();
+        PoseStack poseStack = event.getPoseStack();
         MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
         long now = System.currentTimeMillis();
         boolean renderedAny = false;

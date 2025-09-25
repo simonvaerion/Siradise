@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+[[mods]]
+modId="cdmoveset"
+version="2.0"
+displayName="EpicFight-Resurrection"
+logoFile="icon.png"
+authors="main:CorruptDog,animation:Asanginxst,Moglasses,Yonchi Chikito,namelesssLK,slow time:MegaDarkness()"
+description='''Added more mechanisms and weapons for Epic-fight.'''
+[[dependencies.cdmoveset]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.cdmoveset]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.cdmoveset]]
+    modId="epicfight"
+    mandatory=true
+    versionRange="[20.12.1,)"
+    ordering="BEFORE"
+    side="BOTH"

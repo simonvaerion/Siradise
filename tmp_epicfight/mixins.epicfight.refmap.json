@@ -1,0 +1,228 @@
+{
+  "mappings": {
+    "yesman/epicfight/mixin/client/MixinAbstractContainerEventHandler": {
+      "setFocused(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V": "Lnet/minecraft/client/gui/components/events/AbstractContainerEventHandler;m_7522_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V"
+    },
+    "yesman/epicfight/mixin/client/MixinKeyboardHandler": {
+      "handleDebugKeys(I)Z": "Lnet/minecraft/client/KeyboardHandler;m_90932_(I)Z"
+    },
+    "yesman/epicfight/mixin/common/MixinDamageSources": {
+      "trident(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269525_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;",
+      "arrow(Lnet/minecraft/world/entity/projectile/AbstractArrow;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269418_(Lnet/minecraft/world/entity/projectile/AbstractArrow;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;",
+      "mobAttack(Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269333_(Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/damagesource/DamageSource;",
+      "playerAttack(Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269075_(Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/damagesource/DamageSource;",
+      "witherSkull(Lnet/minecraft/world/entity/projectile/WitherSkull;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269383_(Lnet/minecraft/world/entity/projectile/WitherSkull;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;"
+    },
+    "yesman/epicfight/mixin/client/MixinEntityRenderer": {
+      "renderNameTag": "m_7649_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+      "shouldShowName": "m_6512_(Lnet/minecraft/world/entity/Entity;)Z"
+    },
+    "yesman/epicfight/mixin/common/MixinWitherBoss": {
+      "aiStep()V": "Lnet/minecraft/world/entity/boss/wither/WitherBoss;m_8107_()V",
+      "customServerAiStep()V": "Lnet/minecraft/world/entity/boss/wither/WitherBoss;m_8024_()V"
+    },
+    "yesman/epicfight/mixin/client/MixinLivingEntityRenderer": {
+      "getBob": "m_6930_(Lnet/minecraft/world/entity/LivingEntity;F)F",
+      "isBodyVisible": "m_5933_(Lnet/minecraft/world/entity/LivingEntity;)Z",
+      "getRenderType": "m_7225_(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;"
+    },
+    "yesman/epicfight/mixin/client/MixinThrownTridentRenderer": {
+      "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V": "Lcom/mojang/blaze3d/vertex/PoseStack;m_252781_(Lorg/joml/Quaternionf;)V",
+      "render(Lnet/minecraft/world/entity/projectile/ThrownTrident;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V": "Lnet/minecraft/client/renderer/entity/ThrownTridentRenderer;m_7392_(Lnet/minecraft/world/entity/projectile/ThrownTrident;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+    },
+    "yesman/epicfight/mixin/client/MixinLightTexture": {
+      "updateLightTexture(F)V": "Lnet/minecraft/client/renderer/LightTexture;m_109881_(F)V"
+    },
+    "yesman/epicfight/mixin/common/MixinPlayer": {
+      "defineSynchedData()V": "Lnet/minecraft/world/entity/player/Player;m_8097_()V",
+      "Lnet/minecraft/world/damagesource/CombatTracker;recordDamage(Lnet/minecraft/world/damagesource/DamageSource;F)V": "Lnet/minecraft/world/damagesource/CombatTracker;m_289194_(Lnet/minecraft/world/damagesource/DamageSource;F)V",
+      "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V": "Lnet/minecraft/world/entity/player/Player;m_6475_(Lnet/minecraft/world/damagesource/DamageSource;F)V"
+    },
+    "yesman/epicfight/mixin/common/MixinProjectile": {
+      "onHitEntity": "m_5790_(Lnet/minecraft/world/phys/EntityHitResult;)V"
+    },
+    "yesman/epicfight/mixin/client/MixinLocalPlayer": {
+      "tick()V": "Lnet/minecraft/client/player/LocalPlayer;m_8119_()V",
+      "Lnet/minecraft/client/player/LocalPlayer;sendPosition()V": "Lnet/minecraft/client/player/LocalPlayer;m_108640_()V"
+    },
+    "yesman/epicfight/mixin/common/MixinCrossbowAttack": {
+      "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V"
+    },
+    "yesman/epicfight/mixin/common/MixinEntity": {
+      "turn(DD)V": "Lnet/minecraft/world/entity/Entity;m_19884_(DD)V",
+      "setOldPosAndRot()V": "Lnet/minecraft/world/entity/Entity;m_146867_()V",
+      "lerpMotion(DDD)V": "Lnet/minecraft/world/entity/Entity;m_6001_(DDD)V"
+    },
+    "yesman/epicfight/mixin/client/MixinAgeableListModel": {
+      "headParts": "m_5607_()Ljava/lang/Iterable;",
+      "bodyParts": "m_5608_()Ljava/lang/Iterable;"
+    },
+    "yesman/epicfight/mixin/common/MixinRangedBowAttackGoal": {
+      "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+      "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedBowAttackGoal;m_8037_()V"
+    },
+    "yesman/epicfight/mixin/common/MixinLivingEntity": {
+      "setAbsorptionAmount(F)V": "Lnet/minecraft/world/entity/LivingEntity;m_7911_(F)V",
+      "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V": "Lnet/minecraft/world/entity/LivingEntity;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V",
+      "push(Lnet/minecraft/world/entity/Entity;)V": "Lnet/minecraft/world/entity/LivingEntity;m_7334_(Lnet/minecraft/world/entity/Entity;)V",
+      "defineSynchedData()V": "Lnet/minecraft/world/entity/LivingEntity;m_8097_()V",
+      "blockUsingShield(Lnet/minecraft/world/entity/LivingEntity;)V": "Lnet/minecraft/world/entity/LivingEntity;m_6728_(Lnet/minecraft/world/entity/LivingEntity;)V",
+      "getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F": "Lnet/minecraft/world/entity/LivingEntity;m_21161_(Lnet/minecraft/world/damagesource/DamageSource;F)F",
+      "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V": "Lnet/minecraft/world/entity/LivingEntity;<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V",
+      "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+    },
+    "yesman/epicfight/mixin/client/MixinEnderDragonRenderer": {
+      "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V": "Lnet/minecraft/client/renderer/entity/EnderDragonRenderer;m_7392_(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+    },
+    "yesman/epicfight/mixin/common/MixinServerGamePacketListenerImpl": {
+      "handleResourcePackResponse(Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;)V": "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;m_7529_(Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;)V"
+    },
+    "yesman/epicfight/mixin/client/MixinMinecraft": {
+      "handleKeybinds()V": "Lnet/minecraft/client/Minecraft;m_91279_()V"
+    },
+    "yesman/epicfight/mixin/client/MixinBufferBuilder": {
+      "Lcom/mojang/blaze3d/vertex/BufferBuilder;putSortedQuadIndices(Lcom/mojang/blaze3d/vertex/VertexFormat$IndexType;)V": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_166786_(Lcom/mojang/blaze3d/vertex/VertexFormat$IndexType;)V",
+      "setQuadSorting": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_277127_(Lcom/mojang/blaze3d/vertex/VertexSorting;)V",
+      "storeRenderedBuffer()Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_231177_()Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;"
+    },
+    "yesman/epicfight/mixin/client/MixinClientPacketListener": {
+      "handleRespawn(Lnet/minecraft/network/protocol/game/ClientboundRespawnPacket;)V": "Lnet/minecraft/client/multiplayer/ClientPacketListener;m_7992_(Lnet/minecraft/network/protocol/game/ClientboundRespawnPacket;)V"
+    },
+    "yesman/epicfight/mixin/common/MixinRangedCrossbowAttackGoal": {
+      "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+      "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal;m_8037_()V"
+    },
+    "yesman/epicfight/mixin/client/MixinMouseHandler": {
+      "turnPlayer()V": "Lnet/minecraft/client/MouseHandler;m_91523_()V",
+      "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V": "Lnet/minecraft/client/player/LocalPlayer;m_19884_(DD)V"
+    },
+    "yesman/epicfight/mixin/common/MixinThrownTrident": {
+      "Lnet/minecraft/world/entity/projectile/ThrownTrident;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_20256_(Lnet/minecraft/world/phys/Vec3;)V",
+      "tick()V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_8119_()V",
+      "Lnet/minecraft/world/entity/projectile/ThrownTrident;setPosRaw(DDD)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_20343_(DDD)V",
+      "playerTouch(Lnet/minecraft/world/entity/player/Player;)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_6123_(Lnet/minecraft/world/entity/player/Player;)V",
+      "Lnet/minecraft/world/entity/projectile/AbstractArrow;playerTouch(Lnet/minecraft/world/entity/player/Player;)V": "Lnet/minecraft/world/entity/projectile/AbstractArrow;m_6123_(Lnet/minecraft/world/entity/player/Player;)V"
+    },
+    "yesman/epicfight/mixin/common/MixinMob": {
+      "serverAiStep()V": "Lnet/minecraft/world/entity/Mob;m_6140_()V"
+    },
+    "yesman/epicfight/mixin/common/MixinRangedAttackGoal": {
+      "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+      "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedAttackGoal;m_8037_()V"
+    }
+  },
+  "data": {
+    "searge": {
+      "yesman/epicfight/mixin/client/MixinAbstractContainerEventHandler": {
+        "setFocused(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V": "Lnet/minecraft/client/gui/components/events/AbstractContainerEventHandler;m_7522_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V"
+      },
+      "yesman/epicfight/mixin/client/MixinKeyboardHandler": {
+        "handleDebugKeys(I)Z": "Lnet/minecraft/client/KeyboardHandler;m_90932_(I)Z"
+      },
+      "yesman/epicfight/mixin/common/MixinDamageSources": {
+        "trident(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269525_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;",
+        "arrow(Lnet/minecraft/world/entity/projectile/AbstractArrow;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269418_(Lnet/minecraft/world/entity/projectile/AbstractArrow;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;",
+        "mobAttack(Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269333_(Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/damagesource/DamageSource;",
+        "playerAttack(Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269075_(Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/damagesource/DamageSource;",
+        "witherSkull(Lnet/minecraft/world/entity/projectile/WitherSkull;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;": "Lnet/minecraft/world/damagesource/DamageSources;m_269383_(Lnet/minecraft/world/entity/projectile/WitherSkull;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/damagesource/DamageSource;"
+      },
+      "yesman/epicfight/mixin/client/MixinEntityRenderer": {
+        "renderNameTag": "m_7649_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+        "shouldShowName": "m_6512_(Lnet/minecraft/world/entity/Entity;)Z"
+      },
+      "yesman/epicfight/mixin/common/MixinWitherBoss": {
+        "aiStep()V": "Lnet/minecraft/world/entity/boss/wither/WitherBoss;m_8107_()V",
+        "customServerAiStep()V": "Lnet/minecraft/world/entity/boss/wither/WitherBoss;m_8024_()V"
+      },
+      "yesman/epicfight/mixin/client/MixinLivingEntityRenderer": {
+        "getBob": "m_6930_(Lnet/minecraft/world/entity/LivingEntity;F)F",
+        "isBodyVisible": "m_5933_(Lnet/minecraft/world/entity/LivingEntity;)Z",
+        "getRenderType": "m_7225_(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;"
+      },
+      "yesman/epicfight/mixin/client/MixinThrownTridentRenderer": {
+        "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V": "Lcom/mojang/blaze3d/vertex/PoseStack;m_252781_(Lorg/joml/Quaternionf;)V",
+        "render(Lnet/minecraft/world/entity/projectile/ThrownTrident;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V": "Lnet/minecraft/client/renderer/entity/ThrownTridentRenderer;m_7392_(Lnet/minecraft/world/entity/projectile/ThrownTrident;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+      },
+      "yesman/epicfight/mixin/client/MixinLightTexture": {
+        "updateLightTexture(F)V": "Lnet/minecraft/client/renderer/LightTexture;m_109881_(F)V"
+      },
+      "yesman/epicfight/mixin/common/MixinPlayer": {
+        "defineSynchedData()V": "Lnet/minecraft/world/entity/player/Player;m_8097_()V",
+        "Lnet/minecraft/world/damagesource/CombatTracker;recordDamage(Lnet/minecraft/world/damagesource/DamageSource;F)V": "Lnet/minecraft/world/damagesource/CombatTracker;m_289194_(Lnet/minecraft/world/damagesource/DamageSource;F)V",
+        "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V": "Lnet/minecraft/world/entity/player/Player;m_6475_(Lnet/minecraft/world/damagesource/DamageSource;F)V"
+      },
+      "yesman/epicfight/mixin/common/MixinProjectile": {
+        "onHitEntity": "m_5790_(Lnet/minecraft/world/phys/EntityHitResult;)V"
+      },
+      "yesman/epicfight/mixin/client/MixinLocalPlayer": {
+        "tick()V": "Lnet/minecraft/client/player/LocalPlayer;m_8119_()V",
+        "Lnet/minecraft/client/player/LocalPlayer;sendPosition()V": "Lnet/minecraft/client/player/LocalPlayer;m_108640_()V"
+      },
+      "yesman/epicfight/mixin/common/MixinCrossbowAttack": {
+        "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V"
+      },
+      "yesman/epicfight/mixin/common/MixinEntity": {
+        "turn(DD)V": "Lnet/minecraft/world/entity/Entity;m_19884_(DD)V",
+        "setOldPosAndRot()V": "Lnet/minecraft/world/entity/Entity;m_146867_()V",
+        "lerpMotion(DDD)V": "Lnet/minecraft/world/entity/Entity;m_6001_(DDD)V"
+      },
+      "yesman/epicfight/mixin/client/MixinAgeableListModel": {
+        "headParts": "m_5607_()Ljava/lang/Iterable;",
+        "bodyParts": "m_5608_()Ljava/lang/Iterable;"
+      },
+      "yesman/epicfight/mixin/common/MixinRangedBowAttackGoal": {
+        "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+        "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedBowAttackGoal;m_8037_()V"
+      },
+      "yesman/epicfight/mixin/common/MixinLivingEntity": {
+        "setAbsorptionAmount(F)V": "Lnet/minecraft/world/entity/LivingEntity;m_7911_(F)V",
+        "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V": "Lnet/minecraft/world/entity/LivingEntity;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V",
+        "push(Lnet/minecraft/world/entity/Entity;)V": "Lnet/minecraft/world/entity/LivingEntity;m_7334_(Lnet/minecraft/world/entity/Entity;)V",
+        "defineSynchedData()V": "Lnet/minecraft/world/entity/LivingEntity;m_8097_()V",
+        "blockUsingShield(Lnet/minecraft/world/entity/LivingEntity;)V": "Lnet/minecraft/world/entity/LivingEntity;m_6728_(Lnet/minecraft/world/entity/LivingEntity;)V",
+        "getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F": "Lnet/minecraft/world/entity/LivingEntity;m_21161_(Lnet/minecraft/world/damagesource/DamageSource;F)F",
+        "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V": "Lnet/minecraft/world/entity/LivingEntity;<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V",
+        "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+      },
+      "yesman/epicfight/mixin/client/MixinEnderDragonRenderer": {
+        "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V": "Lnet/minecraft/client/renderer/entity/EnderDragonRenderer;m_7392_(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+      },
+      "yesman/epicfight/mixin/common/MixinServerGamePacketListenerImpl": {
+        "handleResourcePackResponse(Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;)V": "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;m_7529_(Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;)V"
+      },
+      "yesman/epicfight/mixin/client/MixinMinecraft": {
+        "handleKeybinds()V": "Lnet/minecraft/client/Minecraft;m_91279_()V"
+      },
+      "yesman/epicfight/mixin/client/MixinBufferBuilder": {
+        "Lcom/mojang/blaze3d/vertex/BufferBuilder;putSortedQuadIndices(Lcom/mojang/blaze3d/vertex/VertexFormat$IndexType;)V": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_166786_(Lcom/mojang/blaze3d/vertex/VertexFormat$IndexType;)V",
+        "setQuadSorting": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_277127_(Lcom/mojang/blaze3d/vertex/VertexSorting;)V",
+        "storeRenderedBuffer()Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;": "Lcom/mojang/blaze3d/vertex/BufferBuilder;m_231177_()Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;"
+      },
+      "yesman/epicfight/mixin/client/MixinClientPacketListener": {
+        "handleRespawn(Lnet/minecraft/network/protocol/game/ClientboundRespawnPacket;)V": "Lnet/minecraft/client/multiplayer/ClientPacketListener;m_7992_(Lnet/minecraft/network/protocol/game/ClientboundRespawnPacket;)V"
+      },
+      "yesman/epicfight/mixin/common/MixinRangedCrossbowAttackGoal": {
+        "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+        "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal;m_8037_()V"
+      },
+      "yesman/epicfight/mixin/client/MixinMouseHandler": {
+        "turnPlayer()V": "Lnet/minecraft/client/MouseHandler;m_91523_()V",
+        "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V": "Lnet/minecraft/client/player/LocalPlayer;m_19884_(DD)V"
+      },
+      "yesman/epicfight/mixin/common/MixinThrownTrident": {
+        "Lnet/minecraft/world/entity/projectile/ThrownTrident;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_20256_(Lnet/minecraft/world/phys/Vec3;)V",
+        "tick()V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_8119_()V",
+        "Lnet/minecraft/world/entity/projectile/ThrownTrident;setPosRaw(DDD)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_20343_(DDD)V",
+        "playerTouch(Lnet/minecraft/world/entity/player/Player;)V": "Lnet/minecraft/world/entity/projectile/ThrownTrident;m_6123_(Lnet/minecraft/world/entity/player/Player;)V",
+        "Lnet/minecraft/world/entity/projectile/AbstractArrow;playerTouch(Lnet/minecraft/world/entity/player/Player;)V": "Lnet/minecraft/world/entity/projectile/AbstractArrow;m_6123_(Lnet/minecraft/world/entity/player/Player;)V"
+      },
+      "yesman/epicfight/mixin/common/MixinMob": {
+        "serverAiStep()V": "Lnet/minecraft/world/entity/Mob;m_6140_()V"
+      },
+      "yesman/epicfight/mixin/common/MixinRangedAttackGoal": {
+        "Lnet/minecraft/world/entity/monster/RangedAttackMob;performRangedAttack(Lnet/minecraft/world/entity/LivingEntity;F)V": "Lnet/minecraft/world/entity/monster/RangedAttackMob;m_6504_(Lnet/minecraft/world/entity/LivingEntity;F)V",
+        "tick()V": "Lnet/minecraft/world/entity/ai/goal/RangedAttackGoal;m_8037_()V"
+      }
+    }
+  }
+}

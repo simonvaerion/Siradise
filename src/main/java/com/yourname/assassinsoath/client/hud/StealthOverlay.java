@@ -48,8 +48,8 @@ public final class StealthOverlay {
     private static final double ICON_EXTRA_HEIGHT_SCALE = 1.25D;
     private static final float REFERENCE_HEIGHT = 1.95f;
     private static final float SCALE_BASE = 0.025f;
-    private static final float SCALE_MIN = 0.4f;
-    private static final float SCALE_MAX = 3.0f;
+    private static final float SCALE_MIN = 0.8f;
+    private static final float SCALE_MAX = 3.2f;
     private static final float ICON_SCALE_MULTIPLIER = 1.4f;
     private static final double EPIC_FIGHT_ICON_GAP = 0.35D * (4.0D / 9.0D);
     private static final double MIN_ANCHOR_MARGIN = 0.1D;

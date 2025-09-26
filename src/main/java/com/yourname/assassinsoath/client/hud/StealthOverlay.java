@@ -35,7 +35,7 @@ public final class StealthOverlay {
     public static volatile int CLIENT_ALERT_STAGE = 0;
     public static volatile long LAST_UPDATE_MS = 0L;
 
-    private static final ResourceLocation ALERT = ResourceLocation.fromNamespaceAndPath(
+    private static final ResourceLocation ALERT = new ResourceLocation(
             AssassinsOath.MODID, "textures/gui/stealth_alert.png");
 
     private static final Map<Integer, ResourceLocation> QUESTION_ICONS = new HashMap<>();
@@ -58,7 +58,7 @@ public final class StealthOverlay {
     static {
         for (int i = 5; i <= 90; i += 5) {
             String file = "textures/gui/stealth_question_" + i + "pct.png";
-            QUESTION_ICONS.put(i, ResourceLocation.fromNamespaceAndPath(AssassinsOath.MODID, file));
+            QUESTION_ICONS.put(i, new ResourceLocation(AssassinsOath.MODID, file));
         }
     }
 

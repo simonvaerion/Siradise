@@ -15,46 +15,41 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.item.SkillBookItem;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BackstabSkillBookItem extends SkillBookItem {
-    private static final ResourceLocation BACKSTAB_SKILL = ResourceLocation.fromNamespaceAndPath(
-            AssassinsOath.MODID, "backstab_mastery");
+    private static final ResourceLocation BACKSTAB_SKILL = new ResourceLocation(AssassinsOath.MODID, "backstab_mastery");
 
     public BackstabSkillBookItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public @Nonnull ItemStack getDefaultInstance() {
+    public ItemStack getDefaultInstance() {
         return ensureSkill(super.getDefaultInstance());
     }
 
     @Override
-    public void inventoryTick(@Nonnull ItemStack stack, @Nonnull Level level, @Nonnull Entity entity,
-                              int slotId, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         ensureSkill(stack);
         super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
-    public void onCraftedBy(@Nonnull ItemStack stack, @Nonnull Level level, @Nonnull Player player) {
+    public void onCraftedBy(ItemStack stack, Level level, Player player) {
         ensureSkill(stack);
         super.onCraftedBy(stack, level, player);
     }
 
     @Override
-    public @Nonnull InteractionResultHolder<ItemStack> use(@Nonnull Level level, @Nonnull Player player,
-                                                           @Nonnull InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ensureSkill(stack);
         return super.use(level, player, hand);
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level,
-                                @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         ensureSkill(stack);
         super.appendHoverText(stack, level, tooltip, flag);
     }

@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public final class StealthChannel {
     private static final String PROTOCOL = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath(AssassinsOath.MODID, "main"),
+            new ResourceLocation(AssassinsOath.MODID, "main"),
             () -> PROTOCOL,
             PROTOCOL::equals,
             PROTOCOL::equals);

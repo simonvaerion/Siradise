@@ -162,7 +162,8 @@ public final class StealthEvents {
             StealthAwarenessTracker.update(mob, candidate, detection, stage);
         }
 
-        Player targetCandidate = candidate;
+        final Player forcedTargetFinal = forcedTarget;
+        final Player targetCandidate = candidate;
         StealthAwarenessTracker.get(mob).ifPresentOrElse(state -> {
             float trackedDetection = state.detection();
             int trackedStage = state.stage();
@@ -177,7 +178,7 @@ public final class StealthEvents {
                 if (!(mob.getTarget() instanceof Player) && targetCandidate != null) {
                     mob.setTarget(targetCandidate);
                 }
-            } else if (forcedTarget == null && mob.getTarget() instanceof Player current) {
+            } else if (forcedTargetFinal == null && mob.getTarget() instanceof Player current) {
                 if (targetCandidate == null || current.equals(targetCandidate)) {
                     mob.setTarget(null);
                 }

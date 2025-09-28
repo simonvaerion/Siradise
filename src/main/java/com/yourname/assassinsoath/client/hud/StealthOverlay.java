@@ -44,15 +44,14 @@ public final class StealthOverlay {
     private static final Set<Integer> RENDERED_THIS_FRAME = new HashSet<>();
     private static final long DATA_FADE_DELAY_MS = 3000L;
     private static final long DATA_FADE_DURATION_MS = 3000L;
-    private static final double ICON_EXTRA_HEIGHT_BASE = 4.25D;
-    private static final double ICON_EXTRA_HEIGHT_SCALE = 1.7D;
+    private static final double ICON_EXTRA_HEIGHT_BASE = 3.5D;
+    private static final double ICON_EXTRA_HEIGHT_SCALE = 1.3666666666666667D;
     private static final float REFERENCE_HEIGHT = 1.95f;
     private static final float SCALE_BASE = 0.025f;
     private static final float SCALE_MIN = 0.8f;
     private static final float SCALE_MAX = 3.2f;
     private static final float ICON_SCALE_MULTIPLIER = 1.4f;
-    private static final double EPIC_FIGHT_ICON_GAP = 0.4D;
-    private static final double MIN_ANCHOR_MARGIN = 0.1D;
+    private static final double EPIC_FIGHT_ICON_GAP = 0.5D;
     private static final float ICON_BASE_SIZE = 19.2f;
 
     static {
@@ -65,8 +64,7 @@ public final class StealthOverlay {
     public static void updateMobAwareness(int entityId, float detection, int stage) {
         float clampedDetection = Mth.clamp(detection, 0f, 1f);
         int derivedStage = StealthAwarenessTracker.stageFor(clampedDetection);
-        int stageForStore = Math.max(stage, derivedStage);
-        MOB_DATA.put(entityId, new MobHudData(clampedDetection, stageForStore, System.currentTimeMillis()));
+        MOB_DATA.put(entityId, new MobHudData(clampedDetection, derivedStage, System.currentTimeMillis()));
     }
 
     @SubscribeEvent
@@ -209,9 +207,9 @@ public final class StealthOverlay {
     private static double resolveVerticalOffset(LivingEntity entity, float partialTick, float uniformScale) {
         var epicFightTop = EpicFightHealthBarProbe.resolveHealthBarTop(entity, partialTick);
         if (epicFightTop.isPresent()) {
+            double anchor = epicFightTop.getAsDouble();
             double iconHeight = ICON_BASE_SIZE * uniformScale;
-            double anchor = Math.max(epicFightTop.getAsDouble(), entityHeight(entity) + MIN_ANCHOR_MARGIN);
-            return anchor + iconHeight + EPIC_FIGHT_ICON_GAP;
+            return anchor + EPIC_FIGHT_ICON_GAP + iconHeight;
         }
         return computeVerticalOffset(entity);
     }

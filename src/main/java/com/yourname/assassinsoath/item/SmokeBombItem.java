@@ -41,9 +41,11 @@ public class SmokeBombItem extends Item {
     private static final int CLIENT_POOF_PER_TICK = 4;
     private static final int SERVER_CYLINDER_PARTICLES = 80;
     private static final int CLIENT_CYLINDER_PARTICLES = 60;
+    private static final int SERVER_CYLINDER_PER_TICK = 8;
+    private static final int CLIENT_CYLINDER_PER_TICK = 6;
     private static final double PARTICLE_OFFSET_Y = 0.2;
     private static final double HEMISPHERE_RADIUS = 3.0;
-    private static final double CYLINDER_RADIUS = 7.0;
+    private static final double CYLINDER_RADIUS = 10.0;
     private static final double CYLINDER_HEIGHT = 1.0;
     private static final int SHAKE_DURATION_TICKS = 12;
     private static final float SHAKE_STRENGTH = 1.25f;
@@ -79,16 +81,16 @@ public class SmokeBombItem extends Item {
     private void deploySmoke(Level level, LivingEntity user) {
         Vec3 pos = user.position();
         RandomSource random = level.random;
-        Vec3 hemisphereCenter = new Vec3(pos.x, user.getY() + user.getEyeHeight() + PARTICLE_OFFSET_Y, pos.z);
-        BlockPos blockAboveFeet = user.blockPosition().above();
-        Vec3 cylinderBase = Vec3.atBottomCenterOf(blockAboveFeet);
+        Vec3 hemisphereCenter = new Vec3(pos.x, user.getY() + user.getEyeHeight() + PARTICLE_OFFSET_Y - 1.0, pos.z);
+        BlockPos blockPos = user.blockPosition();
+        Vec3 cylinderBase = Vec3.atBottomCenterOf(blockPos);
         if (level instanceof ServerLevel serverLevel) {
             for (int i = 0; i < SERVER_POOF_BURST; ++i) {
                 Vec3 spawnPos = hemisphereCenter.add(sampleHemisphereOffset(random));
                 serverLevel.sendParticles(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0, 0.0, 0.0, 0.0);
             }
             spawnCylinderParticles(serverLevel, cylinderBase, SERVER_CYLINDER_PARTICLES, random);
-            SmokeEmitterTicker.addEmitter(serverLevel, hemisphereCenter);
+            SmokeEmitterTicker.addEmitter(serverLevel, hemisphereCenter, cylinderBase);
             S2CSmokeBombImpact impact = new S2CSmokeBombImpact(SHAKE_DURATION_TICKS, SHAKE_STRENGTH, BLUR_DURATION_TICKS);
             double radiusSq = IMPACT_EFFECT_RADIUS * IMPACT_EFFECT_RADIUS;
             for (ServerPlayer serverPlayer : serverLevel.players()) {
@@ -112,7 +114,7 @@ public class SmokeBombItem extends Item {
             level.addParticle(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, ySpeed, 0.0);
         }
         spawnCylinderParticles(level, cylinderBase, CLIENT_CYLINDER_PARTICLES, random);
-        SmokeEmitterTicker.addEmitter(level, hemisphereCenter);
+        SmokeEmitterTicker.addEmitter(level, hemisphereCenter, cylinderBase);
         level.playLocalSound(pos.x, user.getY(), pos.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.8f,
                 0.7f + random.nextFloat() * 0.4f, false);
     }
@@ -176,8 +178,8 @@ public class SmokeBombItem extends Item {
         private SmokeEmitterTicker() {
         }
 
-        static void addEmitter(Level level, Vec3 center) {
-            ACTIVE_EMITTERS.computeIfAbsent(level, ignored -> new ArrayList<>()).add(new SmokeEmitter(center));
+        static void addEmitter(Level level, Vec3 center, Vec3 cylinderBase) {
+            ACTIVE_EMITTERS.computeIfAbsent(level, ignored -> new ArrayList<>()).add(new SmokeEmitter(center, cylinderBase));
         }
 
         @SubscribeEvent
@@ -206,11 +208,13 @@ public class SmokeBombItem extends Item {
 
     private static final class SmokeEmitter {
         private final Vec3 center;
+        private final Vec3 cylinderBase;
         private final RandomSource random = RandomSource.create();
         private int ticksRemaining = EMITTER_DURATION_TICKS;
 
-        private SmokeEmitter(Vec3 center) {
+        private SmokeEmitter(Vec3 center, Vec3 cylinderBase) {
             this.center = center;
+            this.cylinderBase = cylinderBase;
         }
 
         private void tick(Level level) {
@@ -219,8 +223,14 @@ public class SmokeBombItem extends Item {
             }
             if (level instanceof ServerLevel serverLevel) {
                 spawnServerParticles(serverLevel, ParticleTypes.CLOUD, SERVER_POOF_PER_TICK, 0.0);
+                if (cylinderBase != null) {
+                    spawnCylinderParticles(serverLevel, cylinderBase, SERVER_CYLINDER_PER_TICK, random);
+                }
             } else {
                 spawnClientParticles(level, ParticleTypes.CLOUD, CLIENT_POOF_PER_TICK, 0.01, 0.01);
+                if (cylinderBase != null) {
+                    spawnCylinderParticles(level, cylinderBase, CLIENT_CYLINDER_PER_TICK, random);
+                }
             }
         }
 

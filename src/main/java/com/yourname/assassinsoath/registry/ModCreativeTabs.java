@@ -1,6 +1,7 @@
 package com.yourname.assassinsoath.registry;
 
 import com.yourname.assassinsoath.AssassinsOath;
+import com.yourname.assassinsoath.item.BackstabSkillBooks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -15,9 +16,13 @@ public final class ModCreativeTabs {
     public static final RegistryObject<CreativeModeTab> MAIN = REGISTER.register("main", () -> CreativeModeTab.builder()
             .icon(() -> new ItemStack(ModItems.SMOKE_BOMB.get()))
             .title(Component.translatable("itemGroup.assassinsoath.main"))
-            .displayItems((parameters, output) -> ModItems.REGISTER.getEntries().stream()
-                    .map(RegistryObject::get)
-                    .forEach(output::accept))
+            .displayItems((parameters, output) -> {
+                output.accept(new ItemStack(ModItems.SMOKE_BOMB.get()));
+                ItemStack backstab = BackstabSkillBooks.createBook();
+                if (!backstab.isEmpty()) {
+                    output.accept(backstab);
+                }
+            })
             .build());
 
     private ModCreativeTabs() {

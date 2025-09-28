@@ -58,11 +58,13 @@ public class BackstabSkillBookItem extends SkillBookItem {
         if (stack.isEmpty()) {
             return stack;
         }
+        // Always write the skill identifier so the item retains its binding even if Epic Fight
+        // hasn't finished constructing the actual Skill instance on this side yet.
+        SkillBookItem.setContainingSkill(BACKSTAB_SKILL.toString(), stack);
+
         Skill skill = EpicFightIntegration.BACKSTAB_MASTERY;
         if (skill != null) {
             SkillBookItem.setContainingSkill(skill, stack);
-        } else {
-            SkillBookItem.setContainingSkill(BACKSTAB_SKILL.toString(), stack);
         }
         return stack;
     }

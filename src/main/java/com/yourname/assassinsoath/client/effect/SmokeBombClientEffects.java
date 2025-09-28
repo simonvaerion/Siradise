@@ -1,5 +1,6 @@
 package com.yourname.assassinsoath.client.effect;
 
+import com.mojang.logging.LogUtils;
 import com.yourname.assassinsoath.AssassinsOath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -10,9 +11,11 @@ import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.slf4j.Logger;
 
 @Mod.EventBusSubscriber(modid = AssassinsOath.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class SmokeBombClientEffects {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final RandomSource RANDOM = RandomSource.create();
     private static final ResourceLocation BLUR_SHADER = new ResourceLocation("minecraft", "shaders/post/blur.json");
 
@@ -29,9 +32,13 @@ public final class SmokeBombClientEffects {
         shakeDuration = Math.max(shakeDurationTicks, 0);
         shakeTicks = shakeDuration;
         shakeStrength = Math.max(strength, 0.0f);
-        if (blurDurationTicks > 0) {
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if (blurDurationTicks > 0 && supportsPostProcessing(minecraft) && activateBlurShader(minecraft)) {
             blurTicks = blurDurationTicks;
-            ensureBlurShader();
+        } else {
+            blurTicks = 0;
+            clearBlurShader();
         }
     }
 
@@ -64,21 +71,58 @@ public final class SmokeBombClientEffects {
         if (blurTicks > 0 && --blurTicks == 0) {
             clearBlurShader();
         }
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if ((minecraft.level == null || minecraft.player == null) && blurActive) {
+            clearBlurShader();
+        }
     }
 
-    private static void ensureBlurShader() {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) {
-            return;
+    private static boolean activateBlurShader(Minecraft minecraft) {
+        if (minecraft == null || minecraft.player == null) {
+            return false;
         }
-        if (!blurActive) {
+
+        if (blurActive) {
+            return true;
+        }
+
+        try {
+            minecraft.gameRenderer.shutdownEffect();
+        } catch (Exception ignored) {
+            // shutting down an absent effect can fail harmlessly – carry on
+        }
+
+        try {
+            minecraft.gameRenderer.loadEffect(BLUR_SHADER);
+            blurActive = true;
+            return true;
+        } catch (Exception exception) {
+            LOGGER.warn("Failed to enable smoke bomb blur effect: {}", exception.toString());
             try {
-                minecraft.gameRenderer.loadEffect(BLUR_SHADER);
-                blurActive = true;
-            } catch (Exception ignored) {
-                blurActive = false;
+                minecraft.gameRenderer.shutdownEffect();
+            } catch (Exception shutdownIgnored) {
+                // ignore secondary failure
             }
+            blurActive = false;
+            return false;
         }
+    }
+
+    private static boolean supportsPostProcessing(Minecraft minecraft) {
+        if (minecraft == null) {
+            return false;
+        }
+        try {
+            Object graphicsMode = minecraft.options.graphicsMode().get();
+            if (graphicsMode instanceof Enum<?>) {
+                String name = ((Enum<?>) graphicsMode).name();
+                return !"FAST".equalsIgnoreCase(name);
+            }
+        } catch (Exception ignored) {
+            return true;
+        }
+        return true;
     }
 
     private static void clearBlurShader() {
@@ -89,7 +133,7 @@ public final class SmokeBombClientEffects {
         try {
             minecraft.gameRenderer.shutdownEffect();
         } catch (Exception ignored) {
-            // ignore
+            LOGGER.debug("Ignoring failure while disabling smoke bomb blur: {}", ignored.toString());
         }
         blurActive = false;
     }

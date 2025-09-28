@@ -5,6 +5,7 @@
     { "item": "assassinsoath:smoke_bomb" }
   ],
   "result": {
-    "item": "assassinsoath:backstab_skill_book"
+    "item": "epicfight:skillbook",
+    "nbt": "{Skill:\"assassinsoath:backstab_mastery\"}"
   }
 }

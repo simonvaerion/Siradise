@@ -39,7 +39,6 @@ public final class StealthEvents {
     private static final Map<Integer, Integer> LOST_SIGHT_TICKS = new HashMap<>();
 
     private static final double FULL_STRENGTH_FOV_COSINE = Math.cos(Math.toRadians(120.0));
-    private static final double EXTENDED_FOV_COSINE = Math.cos(Math.toRadians(180.0));
     private static final double MAX_VISUAL_DISTANCE = 50.0;
     private static final double MAX_VISUAL_DISTANCE_SQR = MAX_VISUAL_DISTANCE * MAX_VISUAL_DISTANCE;
     private static final double MAX_CHASE_DISTANCE_SQR = 30.0 * 30.0;
@@ -174,6 +173,11 @@ public final class StealthEvents {
                 LAST_MOB_STATE.put(mob.getId(), new HudSnapshot(trackedDetection, trackedStage));
             }
 
+            if (forcedTargetFinal != null && trackedDetection < RELEASE_DETECTION_LEVEL) {
+                releaseTarget(mob);
+                return;
+            }
+
             if (trackedStage >= StealthAwarenessTracker.STAGE_ALERT) {
                 if (!(mob.getTarget() instanceof Player) && targetCandidate != null) {
                     mob.setTarget(targetCandidate);
@@ -297,8 +301,6 @@ public final class StealthEvents {
         double angleMultiplier;
         if (clampedDot >= FULL_STRENGTH_FOV_COSINE) {
             angleMultiplier = 1.0;
-        } else if (clampedDot >= EXTENDED_FOV_COSINE) {
-            angleMultiplier = 0.5;
         } else {
             return 0.0f;
         }

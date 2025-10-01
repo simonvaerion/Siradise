@@ -2,11 +2,6 @@ package com.yourname.assassinsoath.integration.epicfight;
 
 import com.mojang.logging.LogUtils;
 import com.yourname.assassinsoath.AssassinsOath;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,11 +11,16 @@ import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.passive.PassiveSkill;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Mod.EventBusSubscriber(modid = AssassinsOath.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class EpicFightIntegration {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final AtomicBoolean LOGGED_CAPABILITY_MISSING = new AtomicBoolean(false);
-    @SuppressWarnings("unchecked")
     private static final Capability<Object> SKILL_CAPABILITY;
     private static final Method HAS_LEARNED_METHOD;
 
@@ -29,17 +29,17 @@ public final class EpicFightIntegration {
         Method hasLearned = null;
 
         try {
-            Class<?> capabilitiesClass = Class.forName("yesman.epicfight.world.capabilities.EpicFightCapabilities");
-            Field capabilityField = capabilitiesClass.getField("CAPABILITY_SKILL");
-            Object capabilityValue = capabilityField.get(null);
-            if (capabilityValue instanceof Capability<?>) {
-                capability = (Capability<Object>) capabilityValue;
+            capability = resolveSkillCapability();
+            Class<?> capabilityClass = tryLoadClass(
+                    "yesman.epicfight.world.capabilities.SkillCapability",
+                    "yesman.epicfight.world.capabilities.skill.CapabilitySkill");
+            if (capabilityClass != null) {
+                Class<?> skillClass = Class.forName("yesman.epicfight.skill.Skill");
+                hasLearned = capabilityClass.getMethod("hasLearned", skillClass);
+            } else {
+                LOGGER.debug("Epic Fight skill capability class not found; disabling backstab integration");
             }
-
-            Class<?> capabilityClass = Class.forName("yesman.epicfight.world.capabilities.SkillCapability");
-            Class<?> skillClass = Class.forName("yesman.epicfight.skill.Skill");
-            hasLearned = capabilityClass.getMethod("hasLearned", skillClass);
-        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException exception) {
+        } catch (ReflectiveOperationException | LinkageError exception) {
             LOGGER.debug("Epic Fight skill capability unavailable: {}", exception.toString());
         }
 
@@ -60,7 +60,7 @@ public final class EpicFightIntegration {
 
     public static boolean hasBackstabSkill(Player player) {
         if (BACKSTAB_MASTERY == null || SKILL_CAPABILITY == null || HAS_LEARNED_METHOD == null) {
-            if (SKILL_CAPABILITY == null && LOGGED_CAPABILITY_MISSING.compareAndSet(false, true)) {
+            if (LOGGED_CAPABILITY_MISSING.compareAndSet(false, true)) {
                 LOGGER.warn("Epic Fight skill capability is unavailable; backstab checks will be skipped");
             }
             return false;
@@ -78,5 +78,27 @@ public final class EpicFightIntegration {
             LOGGER.debug("Failed to query Epic Fight capability: {}", exception.toString());
             return false;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Capability<Object> resolveSkillCapability() throws ReflectiveOperationException {
+        Class<?> capabilitiesClass = Class.forName("yesman.epicfight.world.capabilities.EpicFightCapabilities");
+        Field capabilityField = capabilitiesClass.getField("CAPABILITY_SKILL");
+        Object capabilityValue = capabilityField.get(null);
+        if (capabilityValue instanceof Capability<?> cap) {
+            return (Capability<Object>) cap;
+        }
+        return null;
+    }
+
+    private static Class<?> tryLoadClass(String... names) {
+        for (String name : names) {
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException | LinkageError exception) {
+                LOGGER.debug("Epic Fight class {} unavailable: {}", name, exception.toString());
+            }
+        }
+        return null;
     }
 }

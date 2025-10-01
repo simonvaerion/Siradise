@@ -14,6 +14,10 @@ public final class ModParticles {
     public static final RegistryObject<SimpleParticleType> BLOOD_SPLASH =
             PARTICLES.register("blood_splash", () -> new SimpleParticleType(true));
 
+    public static final RegistryObject<SimpleParticleType> SMOKE_PUFF =
+            PARTICLES.register("smoke_puff", () -> new SimpleParticleType(true));
+
     private ModParticles() {
     }
 }
+

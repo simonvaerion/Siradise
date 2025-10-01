@@ -1,0 +1,472 @@
+Compiled from "SmokeBombItem.java"
+public class com.yourname.assassinsoath.item.SmokeBombItem extends net.minecraft.world.item.Item {
+  private static final int QUICK_THRESHOLD_TICKS;
+
+  private static final int SERVER_POOF_BURST;
+
+  private static final int CLIENT_POOF_BURST;
+
+  private static final int EMITTER_DURATION_TICKS;
+
+  private static final int SERVER_POOF_PER_TICK;
+
+  private static final int CLIENT_POOF_PER_TICK;
+
+  private static final int SERVER_CYLINDER_PARTICLES;
+
+  private static final int CLIENT_CYLINDER_PARTICLES;
+
+  private static final double PARTICLE_OFFSET_Y;
+
+  private static final double HEMISPHERE_HORIZONTAL_RADIUS;
+
+  private static final double HEMISPHERE_VERTICAL_RADIUS;
+
+  private static final double CYLINDER_RADIUS;
+
+  private static final double CYLINDER_HEIGHT;
+
+  private static final int SHAKE_DURATION_TICKS;
+
+  private static final float SHAKE_STRENGTH;
+
+  private static final int BLUR_DURATION_TICKS;
+
+  private static final double IMPACT_EFFECT_RADIUS;
+
+  public com.yourname.assassinsoath.item.SmokeBombItem(net.minecraft.world.item.Item$Properties);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #67                 // Method net/minecraft/world/item/Item."<init>":(Lnet/minecraft/world/item/Item$Properties;)V
+       5: return
+
+  public net.minecraft.world.InteractionResultHolder<net.minecraft.world.item.ItemStack> m_7203_(net.minecraft.world.level.Level, net.minecraft.world.entity.player.Player, net.minecraft.world.InteractionHand);
+    Code:
+       0: aload_2
+       1: aload_3
+       2: invokevirtual #81                 // Method net/minecraft/world/entity/player/Player.m_21120_:(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;
+       5: astore        4
+       7: aload_2
+       8: aload_3
+       9: invokevirtual #85                 // Method net/minecraft/world/entity/player/Player.m_6672_:(Lnet/minecraft/world/InteractionHand;)V
+      12: aload         4
+      14: invokestatic  #91                 // Method net/minecraft/world/InteractionResultHolder.m_19096_:(Ljava/lang/Object;)Lnet/minecraft/world/InteractionResultHolder;
+      17: areturn
+
+  public void m_5551_(net.minecraft.world.item.ItemStack, net.minecraft.world.level.Level, net.minecraft.world.entity.LivingEntity, int);
+    Code:
+       0: aload_3
+       1: instanceof    #77                 // class net/minecraft/world/entity/player/Player
+       4: ifeq          16
+       7: aload_3
+       8: checkcast     #77                 // class net/minecraft/world/entity/player/Player
+      11: astore        5
+      13: goto          17
+      16: return
+      17: aload_0
+      18: aload_1
+      19: invokevirtual #105                // Method m_8105_:(Lnet/minecraft/world/item/ItemStack;)I
+      22: iload         4
+      24: isub
+      25: istore        6
+      27: iload         6
+      29: bipush        20
+      31: if_icmpgt     64
+      34: aload_0
+      35: aload_2
+      36: aload         5
+      38: invokevirtual #109                // Method deploySmoke:(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)V
+      41: aload_2
+      42: getfield      #115                // Field net/minecraft/world/level/Level.f_46443_:Z
+      45: ifne          64
+      48: aload         5
+      50: invokevirtual #119                // Method net/minecraft/world/entity/player/Player.m_150110_:()Lnet/minecraft/world/entity/player/Abilities;
+      53: getfield      #124                // Field net/minecraft/world/entity/player/Abilities.f_35937_:Z
+      56: ifne          64
+      59: aload_1
+      60: iconst_1
+      61: invokevirtual #130                // Method net/minecraft/world/item/ItemStack.m_41774_:(I)V
+      64: return
+
+  private void deploySmoke(net.minecraft.world.level.Level, net.minecraft.world.entity.LivingEntity);
+    Code:
+       0: aload_2
+       1: invokevirtual #140                // Method net/minecraft/world/entity/LivingEntity.m_20182_:()Lnet/minecraft/world/phys/Vec3;
+       4: astore_3
+       5: aload_1
+       6: getfield      #144                // Field net/minecraft/world/level/Level.f_46441_:Lnet/minecraft/util/RandomSource;
+       9: astore        4
+      11: new           #146                // class net/minecraft/world/phys/Vec3
+      14: dup
+      15: aload_3
+      16: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+      19: aload_2
+      20: invokevirtual #153                // Method net/minecraft/world/entity/LivingEntity.m_20186_:()D
+      23: ldc2_w        #43                 // double 0.2d
+      26: dadd
+      27: aload_3
+      28: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+      31: invokespecial #159                // Method net/minecraft/world/phys/Vec3."<init>":(DDD)V
+      34: astore        5
+      36: aload_2
+      37: invokevirtual #163                // Method net/minecraft/world/entity/LivingEntity.m_20183_:()Lnet/minecraft/core/BlockPos;
+      40: invokevirtual #168                // Method net/minecraft/core/BlockPos.m_7494_:()Lnet/minecraft/core/BlockPos;
+      43: astore        6
+      45: new           #146                // class net/minecraft/world/phys/Vec3
+      48: dup
+      49: aload         6
+      51: invokevirtual #172                // Method net/minecraft/core/BlockPos.m_123341_:()I
+      54: i2d
+      55: ldc2_w        #173                // double 0.5d
+      58: dadd
+      59: aload         6
+      61: invokevirtual #177                // Method net/minecraft/core/BlockPos.m_123342_:()I
+      64: i2d
+      65: aload         6
+      67: invokevirtual #180                // Method net/minecraft/core/BlockPos.m_123343_:()I
+      70: i2d
+      71: ldc2_w        #173                // double 0.5d
+      74: dadd
+      75: invokespecial #159                // Method net/minecraft/world/phys/Vec3."<init>":(DDD)V
+      78: astore        7
+      80: aload_1
+      81: instanceof    #182                // class net/minecraft/server/level/ServerLevel
+      84: ifeq          337
+      87: aload_1
+      88: checkcast     #182                // class net/minecraft/server/level/ServerLevel
+      91: astore        8
+      93: iconst_0
+      94: istore        9
+      96: iload         9
+      98: bipush        64
+     100: if_icmpge     150
+     103: aload         5
+     105: aload         4
+     107: invokestatic  #188                // Method sampleHemisphereOffset:(Lnet/minecraft/util/RandomSource;)Lnet/minecraft/world/phys/Vec3;
+     110: invokevirtual #192                // Method net/minecraft/world/phys/Vec3.m_82549_:(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+     113: astore        10
+     115: aload         8
+     117: getstatic     #198                // Field net/minecraft/core/particles/ParticleTypes.f_123759_:Lnet/minecraft/core/particles/SimpleParticleType;
+     120: aload         10
+     122: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     125: aload         10
+     127: getfield      #201                // Field net/minecraft/world/phys/Vec3.f_82480_:D
+     130: aload         10
+     132: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     135: iconst_1
+     136: dconst_0
+     137: dconst_0
+     138: dconst_0
+     139: dconst_0
+     140: invokevirtual #205                // Method net/minecraft/server/level/ServerLevel.m_8767_:(Lnet/minecraft/core/particles/ParticleOptions;DDDIDDDD)I
+     143: pop
+     144: iinc          9, 1
+     147: goto          96
+     150: aload         8
+     152: aload         7
+     154: bipush        80
+     156: aload         4
+     158: invokestatic  #209                // Method spawnCylinderParticles:(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/util/RandomSource;)V
+     161: aload         8
+     163: aload         5
+     165: invokestatic  #213                // Method com/yourname/assassinsoath/item/SmokeBombItem$SmokeEmitterTicker.addEmitter:(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;)V
+     168: new           #215                // class com/yourname/assassinsoath/network/S2CSmokeBombImpact
+     171: dup
+     172: bipush        12
+     174: ldc           #59                 // float 1.25f
+     176: bipush        20
+     178: invokespecial #218                // Method com/yourname/assassinsoath/network/S2CSmokeBombImpact."<init>":(IFI)V
+     181: astore        9
+     183: ldc2_w        #219                // double 100.0d
+     186: dstore        10
+     188: aload         8
+     190: invokevirtual #224                // Method net/minecraft/server/level/ServerLevel.m_6907_:()Ljava/util/List;
+     193: invokeinterface #230,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     198: astore        12
+     200: aload         12
+     202: invokeinterface #236,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     207: ifeq          282
+     210: aload         12
+     212: invokeinterface #240,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     217: checkcast     #242                // class net/minecraft/server/level/ServerPlayer
+     220: astore        13
+     222: aload         13
+     224: invokevirtual #246                // Method net/minecraft/server/level/ServerPlayer.m_9236_:()Lnet/minecraft/world/level/Level;
+     227: aload         8
+     229: if_acmpne     279
+     232: aload         13
+     234: aload         5
+     236: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     239: aload         5
+     241: getfield      #201                // Field net/minecraft/world/phys/Vec3.f_82480_:D
+     244: aload         5
+     246: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     249: invokevirtual #250                // Method net/minecraft/server/level/ServerPlayer.m_20275_:(DDD)D
+     252: dload         10
+     254: dcmpg
+     255: ifgt          279
+     258: getstatic     #256                // Field com/yourname/assassinsoath/network/StealthChannel.CHANNEL:Lnet/minecraftforge/network/simple/SimpleChannel;
+     261: getstatic     #260                // Field net/minecraftforge/network/PacketDistributor.PLAYER:Lnet/minecraftforge/network/PacketDistributor;
+     264: aload         13
+     266: invokedynamic #279,  0            // InvokeDynamic #0:get:(Lnet/minecraft/server/level/ServerPlayer;)Ljava/util/function/Supplier;
+     271: invokevirtual #283                // Method net/minecraftforge/network/PacketDistributor.with:(Ljava/util/function/Supplier;)Lnet/minecraftforge/network/PacketDistributor$PacketTarget;
+     274: aload         9
+     276: invokevirtual #289                // Method net/minecraftforge/network/simple/SimpleChannel.send:(Lnet/minecraftforge/network/PacketDistributor$PacketTarget;Ljava/lang/Object;)V
+     279: goto          200
+     282: aload         8
+     284: aload_2
+     285: getstatic     #295                // Field net/minecraft/world/level/gameevent/GameEvent.f_157812_:Lnet/minecraft/world/level/gameevent/GameEvent;
+     288: aload_3
+     289: invokevirtual #299                // Method net/minecraft/server/level/ServerLevel.m_220400_:(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/phys/Vec3;)V
+     292: aload         8
+     294: aconst_null
+     295: aload_3
+     296: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     299: aload_2
+     300: invokevirtual #153                // Method net/minecraft/world/entity/LivingEntity.m_20186_:()D
+     303: aload_3
+     304: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     307: getstatic     #305                // Field net/minecraft/sounds/SoundEvents.f_11937_:Lnet/minecraft/sounds/SoundEvent;
+     310: getstatic     #311                // Field net/minecraft/sounds/SoundSource.PLAYERS:Lnet/minecraft/sounds/SoundSource;
+     313: ldc_w         #312                // float 0.8f
+     316: ldc_w         #313                // float 0.7f
+     319: aload_1
+     320: getfield      #144                // Field net/minecraft/world/level/Level.f_46441_:Lnet/minecraft/util/RandomSource;
+     323: invokeinterface #317,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188501_:()F
+     328: ldc_w         #318                // float 0.4f
+     331: fmul
+     332: fadd
+     333: invokevirtual #322                // Method net/minecraft/server/level/ServerLevel.m_6263_:(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V
+     336: return
+     337: iconst_0
+     338: istore        8
+     340: iload         8
+     342: bipush        48
+     344: if_icmpge     404
+     347: aload         5
+     349: aload         4
+     351: invokestatic  #188                // Method sampleHemisphereOffset:(Lnet/minecraft/util/RandomSource;)Lnet/minecraft/world/phys/Vec3;
+     354: invokevirtual #192                // Method net/minecraft/world/phys/Vec3.m_82549_:(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+     357: astore        9
+     359: aload_1
+     360: getstatic     #198                // Field net/minecraft/core/particles/ParticleTypes.f_123759_:Lnet/minecraft/core/particles/SimpleParticleType;
+     363: aload         9
+     365: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     368: aload         9
+     370: getfield      #201                // Field net/minecraft/world/phys/Vec3.f_82480_:D
+     373: aload         9
+     375: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     378: dconst_0
+     379: ldc2_w        #323                // double 0.01d
+     382: aload         4
+     384: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+     389: ldc2_w        #323                // double 0.01d
+     392: dmul
+     393: dadd
+     394: dconst_0
+     395: invokevirtual #331                // Method net/minecraft/world/level/Level.m_7106_:(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V
+     398: iinc          8, 1
+     401: goto          340
+     404: aload_1
+     405: aload         7
+     407: bipush        60
+     409: aload         4
+     411: invokestatic  #209                // Method spawnCylinderParticles:(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/util/RandomSource;)V
+     414: aload_1
+     415: aload         5
+     417: invokestatic  #213                // Method com/yourname/assassinsoath/item/SmokeBombItem$SmokeEmitterTicker.addEmitter:(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;)V
+     420: aload_1
+     421: aload_3
+     422: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     425: aload_2
+     426: invokevirtual #153                // Method net/minecraft/world/entity/LivingEntity.m_20186_:()D
+     429: aload_3
+     430: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     433: getstatic     #305                // Field net/minecraft/sounds/SoundEvents.f_11937_:Lnet/minecraft/sounds/SoundEvent;
+     436: getstatic     #311                // Field net/minecraft/sounds/SoundSource.PLAYERS:Lnet/minecraft/sounds/SoundSource;
+     439: ldc_w         #312                // float 0.8f
+     442: ldc_w         #313                // float 0.7f
+     445: aload_1
+     446: getfield      #144                // Field net/minecraft/world/level/Level.f_46441_:Lnet/minecraft/util/RandomSource;
+     449: invokeinterface #317,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188501_:()F
+     454: ldc_w         #318                // float 0.4f
+     457: fmul
+     458: fadd
+     459: iconst_0
+     460: invokevirtual #335                // Method net/minecraft/world/level/Level.m_7785_:(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V
+     463: return
+
+  private static void spawnCylinderParticles(net.minecraft.world.level.Level, net.minecraft.world.phys.Vec3, int, net.minecraft.util.RandomSource);
+    Code:
+       0: iload_2
+       1: ifgt          5
+       4: return
+       5: aload_0
+       6: instanceof    #182                // class net/minecraft/server/level/ServerLevel
+       9: ifeq          73
+      12: aload_0
+      13: checkcast     #182                // class net/minecraft/server/level/ServerLevel
+      16: astore        4
+      18: iconst_0
+      19: istore        5
+      21: iload         5
+      23: iload_2
+      24: if_icmpge     72
+      27: aload_1
+      28: aload_3
+      29: invokestatic  #355                // Method sampleCylinderOffset:(Lnet/minecraft/util/RandomSource;)Lnet/minecraft/world/phys/Vec3;
+      32: invokevirtual #192                // Method net/minecraft/world/phys/Vec3.m_82549_:(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+      35: astore        6
+      37: aload         4
+      39: getstatic     #198                // Field net/minecraft/core/particles/ParticleTypes.f_123759_:Lnet/minecraft/core/particles/SimpleParticleType;
+      42: aload         6
+      44: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+      47: aload         6
+      49: getfield      #201                // Field net/minecraft/world/phys/Vec3.f_82480_:D
+      52: aload         6
+      54: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+      57: iconst_1
+      58: dconst_0
+      59: dconst_0
+      60: dconst_0
+      61: dconst_0
+      62: invokevirtual #205                // Method net/minecraft/server/level/ServerLevel.m_8767_:(Lnet/minecraft/core/particles/ParticleOptions;DDDIDDDD)I
+      65: pop
+      66: iinc          5, 1
+      69: goto          21
+      72: return
+      73: iconst_0
+      74: istore        4
+      76: iload         4
+      78: iload_2
+      79: if_icmpge     140
+      82: aload_1
+      83: aload_3
+      84: invokestatic  #355                // Method sampleCylinderOffset:(Lnet/minecraft/util/RandomSource;)Lnet/minecraft/world/phys/Vec3;
+      87: invokevirtual #192                // Method net/minecraft/world/phys/Vec3.m_82549_:(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+      90: astore        5
+      92: ldc2_w        #323                // double 0.01d
+      95: aload_3
+      96: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+     101: ldc2_w        #323                // double 0.01d
+     104: dmul
+     105: dadd
+     106: dstore        6
+     108: aload_0
+     109: getstatic     #198                // Field net/minecraft/core/particles/ParticleTypes.f_123759_:Lnet/minecraft/core/particles/SimpleParticleType;
+     112: aload         5
+     114: getfield      #149                // Field net/minecraft/world/phys/Vec3.f_82479_:D
+     117: aload         5
+     119: getfield      #201                // Field net/minecraft/world/phys/Vec3.f_82480_:D
+     122: aload         5
+     124: getfield      #156                // Field net/minecraft/world/phys/Vec3.f_82481_:D
+     127: dconst_0
+     128: dload         6
+     130: dconst_0
+     131: invokevirtual #331                // Method net/minecraft/world/level/Level.m_7106_:(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V
+     134: iinc          4, 1
+     137: goto          76
+     140: return
+
+  private static net.minecraft.world.phys.Vec3 sampleHemisphereOffset(net.minecraft.util.RandomSource);
+    Code:
+       0: aload_0
+       1: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+       6: ldc2_w        #359                // double 2.0d
+       9: dmul
+      10: dconst_1
+      11: dsub
+      12: dstore_1
+      13: aload_0
+      14: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+      19: dstore_3
+      20: aload_0
+      21: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+      26: ldc2_w        #359                // double 2.0d
+      29: dmul
+      30: dconst_1
+      31: dsub
+      32: dstore        5
+      34: dload_1
+      35: dload_1
+      36: dmul
+      37: dload_3
+      38: dload_3
+      39: dmul
+      40: dadd
+      41: dload         5
+      43: dload         5
+      45: dmul
+      46: dadd
+      47: dstore        7
+      49: dload         7
+      51: dconst_1
+      52: dcmpg
+      53: ifgt          80
+      56: new           #146                // class net/minecraft/world/phys/Vec3
+      59: dup
+      60: dload_1
+      61: ldc2_w        #46                 // double 3.0d
+      64: dmul
+      65: dload_3
+      66: ldc2_w        #46                 // double 3.0d
+      69: dmul
+      70: dload         5
+      72: ldc2_w        #46                 // double 3.0d
+      75: dmul
+      76: invokespecial #159                // Method net/minecraft/world/phys/Vec3."<init>":(DDD)V
+      79: areturn
+      80: goto          0
+
+  private static net.minecraft.world.phys.Vec3 sampleCylinderOffset(net.minecraft.util.RandomSource);
+    Code:
+       0: aload_0
+       1: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+       6: ldc2_w        #365                // double 6.283185307179586d
+       9: dmul
+      10: dstore_1
+      11: aload_0
+      12: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+      17: invokestatic  #372                // Method java/lang/Math.sqrt:(D)D
+      20: ldc2_w        #50                 // double 7.0d
+      23: dmul
+      24: dstore_3
+      25: dload_1
+      26: invokestatic  #375                // Method java/lang/Math.cos:(D)D
+      29: dload_3
+      30: dmul
+      31: dstore        5
+      33: dload_1
+      34: invokestatic  #378                // Method java/lang/Math.sin:(D)D
+      37: dload_3
+      38: dmul
+      39: dstore        7
+      41: aload_0
+      42: invokeinterface #327,  1          // InterfaceMethod net/minecraft/util/RandomSource.m_188500_:()D
+      47: dconst_1
+      48: dmul
+      49: dstore        9
+      51: new           #146                // class net/minecraft/world/phys/Vec3
+      54: dup
+      55: dload         5
+      57: dload         9
+      59: dload         7
+      61: invokespecial #159                // Method net/minecraft/world/phys/Vec3."<init>":(DDD)V
+      64: areturn
+
+  public net.minecraft.world.item.UseAnim m_6164_(net.minecraft.world.item.ItemStack);
+    Code:
+       0: getstatic     #388                // Field net/minecraft/world/item/UseAnim.NONE:Lnet/minecraft/world/item/UseAnim;
+       3: areturn
+
+  public int m_8105_(net.minecraft.world.item.ItemStack);
+    Code:
+       0: ldc_w         #389                // int 72000
+       3: ireturn
+
+  private static net.minecraft.server.level.ServerPlayer lambda$deploySmoke$0(net.minecraft.server.level.ServerPlayer);
+    Code:
+       0: aload_0
+       1: areturn
+}

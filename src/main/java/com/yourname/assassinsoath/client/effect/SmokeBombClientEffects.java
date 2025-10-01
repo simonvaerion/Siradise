@@ -3,27 +3,29 @@ package com.yourname.assassinsoath.client.effect;
 import com.mojang.logging.LogUtils;
 import com.yourname.assassinsoath.AssassinsOath;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import org.slf4j.Logger;
 
 @Mod.EventBusSubscriber(modid = AssassinsOath.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class SmokeBombClientEffects {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final RandomSource RANDOM = RandomSource.create();
-    private static final ResourceLocation BLUR_SHADER = new ResourceLocation("minecraft", "shaders/post/blur.json");
+    private static final float MAX_OVERLAY_ALPHA = 0.7f;
 
     private static int shakeTicks;
     private static int shakeDuration;
     private static float shakeStrength;
-    private static int blurTicks;
-    private static boolean blurActive;
+    private static int overlayTicks;
+    private static int overlayDuration;
 
     private SmokeBombClientEffects() {
     }
@@ -33,12 +35,12 @@ public final class SmokeBombClientEffects {
         shakeTicks = shakeDuration;
         shakeStrength = Math.max(strength, 0.0f);
 
-        Minecraft minecraft = Minecraft.getInstance();
-        if (blurDurationTicks > 0 && supportsPostProcessing(minecraft) && activateBlurShader(minecraft)) {
-            blurTicks = blurDurationTicks;
+        if (blurDurationTicks > 0) {
+            overlayDuration = blurDurationTicks;
+            overlayTicks = blurDurationTicks;
         } else {
-            blurTicks = 0;
-            clearBlurShader();
+            overlayDuration = 0;
+            overlayTicks = 0;
         }
     }
 
@@ -68,73 +70,40 @@ public final class SmokeBombClientEffects {
         if (shakeTicks > 0) {
             --shakeTicks;
         }
-        if (blurTicks > 0 && --blurTicks == 0) {
-            clearBlurShader();
-        }
-
-        Minecraft minecraft = Minecraft.getInstance();
-        if ((minecraft.level == null || minecraft.player == null) && blurActive) {
-            clearBlurShader();
+        if (overlayTicks > 0) {
+            --overlayTicks;
         }
     }
 
-    private static boolean activateBlurShader(Minecraft minecraft) {
-        if (minecraft == null || minecraft.player == null) {
-            return false;
-        }
-
-        if (blurActive) {
-            return true;
-        }
-
-        try {
-            minecraft.gameRenderer.shutdownEffect();
-        } catch (Exception ignored) {
-            // shutting down an absent effect can fail harmlessly – carry on
-        }
-
-        try {
-            minecraft.gameRenderer.loadEffect(BLUR_SHADER);
-            blurActive = true;
-            return true;
-        } catch (Exception exception) {
-            LOGGER.warn("Failed to enable smoke bomb blur effect: {}", exception.toString());
-            try {
-                minecraft.gameRenderer.shutdownEffect();
-            } catch (Exception shutdownIgnored) {
-                // ignore secondary failure
-            }
-            blurActive = false;
-            return false;
-        }
-    }
-
-    private static boolean supportsPostProcessing(Minecraft minecraft) {
-        if (minecraft == null) {
-            return false;
-        }
-        try {
-            Object graphicsMode = minecraft.options.graphicsMode().get();
-            if (graphicsMode instanceof Enum<?>) {
-                String name = ((Enum<?>) graphicsMode).name();
-                return !"FAST".equalsIgnoreCase(name);
-            }
-        } catch (Exception ignored) {
-            return true;
-        }
-        return true;
-    }
-
-    private static void clearBlurShader() {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (!blurActive) {
+    @SubscribeEvent
+    public static void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
+        if (overlayTicks <= 0 || overlayDuration <= 0) {
             return;
         }
-        try {
-            minecraft.gameRenderer.shutdownEffect();
-        } catch (Exception ignored) {
-            LOGGER.debug("Ignoring failure while disabling smoke bomb blur: {}", ignored.toString());
+        if (!event.getOverlay().id().equals(VanillaGuiOverlay.VIGNETTE.id())) {
+            return;
         }
-        blurActive = false;
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) {
+            return;
+        }
+
+        float progress = overlayTicks / (float) overlayDuration;
+        float alpha = MAX_OVERLAY_ALPHA * progress;
+        if (alpha <= 0.0f) {
+            return;
+        }
+
+        try {
+            GuiGraphics guiGraphics = event.getGuiGraphics();
+            int width = minecraft.getWindow().getGuiScaledWidth();
+            int height = minecraft.getWindow().getGuiScaledHeight();
+            int alphaChannel = ((int) (alpha * 255.0f) & 0xFF);
+            int color = (alphaChannel << 24) | 0x00FFFFFF;
+            guiGraphics.fill(0, 0, width, height, color);
+        } catch (Exception exception) {
+            LOGGER.debug("Failed to render smoke overlay: {}", exception.toString());
+        }
     }
 }

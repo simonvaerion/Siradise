@@ -44,8 +44,8 @@ public final class StealthEvents {
     private static final double MAX_CHASE_DISTANCE_SQR = 30.0 * 30.0;
     private static final int UPDATE_INTERVAL_TICKS = 5;
     private static final int LOST_SIGHT_RELEASE_TICKS = 200;
-    private static final float RELEASE_DETECTION_LEVEL = 0.8f;
-    private static final float BASE_VISUAL_INCREMENT = 0.5f;
+    private static final float RELEASE_DETECTION_LEVEL = 0.99f;
+    private static final float BASE_VISUAL_INCREMENT = 0.3f;
     private static final double DISTANCE_DECAY_RATE = Math.log(1000.0) / MAX_VISUAL_DISTANCE;
     private static final double MIN_BRIGHTNESS_COEFFICIENT = 0.01;
 

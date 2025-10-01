@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "epicfight:skillbook" },
+    { "item": "assassinsoath:smoke_bomb" }
+  ],
+  "result": {
+    "item": "epicfight:skillbook",
+    "nbt": "{Skill:\"assassinsoath:backstab_mastery\"}"
+  }
+}

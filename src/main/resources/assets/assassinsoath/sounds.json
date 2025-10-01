@@ -1,0 +1,12 @@
+{
+  "smoke_bomb.use": {
+    "sounds": [
+      { "name": "assassinsoath:smoke_bomb_use", "attenuation_distance": 16 }
+    ]
+  },
+  "smoke_bomb.crack": {
+    "sounds": [
+      { "name": "assassinsoath:smoke_bomb_crack", "attenuation_distance": 16 }
+    ]
+  }
+}

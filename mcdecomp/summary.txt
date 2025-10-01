@@ -1,0 +1,30 @@
+Summary for C:\Users\user\.gradle\caches\forge_gradle\minecraft_repo\versions\1.20.1\client.jar
+Decompiled with CFR 0.152
+
+
+qx
+----------------------------
+
+a(java.io.DataInput rh )
+  Exception : org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [4[SWITCH], 8[CASE]], but top level block is 9[SWITCH]
+
+
+bfz
+----------------------------
+
+b_()
+  Unable to fully structure code
+
+
+bsf
+----------------------------
+
+b(aif bfe )
+  Unable to fully structure code
+
+
+dma
+----------------------------
+
+a(cmn drs java.util.Set<gu> java.util.Set<gu> java.util.Set<gu> )
+  Unable to fully structure code

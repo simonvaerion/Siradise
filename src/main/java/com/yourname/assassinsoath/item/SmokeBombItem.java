@@ -1,24 +1,27 @@
 package com.yourname.assassinsoath.item;
 
+import com.yourname.assassinsoath.AssassinsOath;
+import com.yourname.assassinsoath.entity.SmokeBombProjectile;
 import com.yourname.assassinsoath.network.S2CSmokeBombImpact;
 import com.yourname.assassinsoath.network.StealthChannel;
+import com.yourname.assassinsoath.registry.ModSoundEvents;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -33,7 +36,21 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
 public class SmokeBombItem extends Item {
-    private static final int QUICK_THRESHOLD_TICKS = 20;
+<<<<<<< ours
+    private static final int SERVER_POOF_BURST = 64 * 9;
+    private static final int CLIENT_POOF_BURST = 48 * 9;
+    private static final int EMITTER_DURATION_TICKS = 600;
+    private static final int SERVER_POOF_PER_TICK = 4 * 9;
+    private static final int CLIENT_POOF_PER_TICK = 4 * 9;
+    private static final int SERVER_CYLINDER_PARTICLES = 80 * 9;
+    private static final int CLIENT_CYLINDER_PARTICLES = 60 * 9;
+    private static final double PARTICLE_OFFSET_Y = 0.2D;
+    private static final double HEMISPHERE_HORIZONTAL_RADIUS = 3.0D;
+    private static final double HEMISPHERE_VERTICAL_RADIUS = 3.0D;
+    private static final double CYLINDER_HEIGHT = 1.5D;
+    private static final double CYLINDER_MAX_RADIUS = 12.0D;
+    private static final double CYLINDER_EXPANSION_PER_TICK = 2.0D / 6.0D;
+=======
     private static final int SERVER_POOF_BURST = 64;
     private static final int CLIENT_POOF_BURST = 48;
     private static final int EMITTER_DURATION_TICKS = 600;
@@ -41,18 +58,20 @@ public class SmokeBombItem extends Item {
     private static final int CLIENT_POOF_PER_TICK = 4;
     private static final int SERVER_CYLINDER_PARTICLES = 80;
     private static final int CLIENT_CYLINDER_PARTICLES = 60;
-    private static final int SERVER_CYLINDER_PER_TICK = 8;
-    private static final int CLIENT_CYLINDER_PER_TICK = 6;
-    private static final double PARTICLE_OFFSET_Y = 0.2;
-    private static final double HEMISPHERE_RADIUS = 3.0;
-    private static final double CYLINDER_RADIUS = 10.0;
-    private static final double CYLINDER_HEIGHT = 1.0;
+    private static final double PARTICLE_OFFSET_Y = 0.2D;
+    private static final double HEMISPHERE_HORIZONTAL_RADIUS = 3.0D;
+    private static final double HEMISPHERE_VERTICAL_RADIUS = 3.0D;
+    private static final double CYLINDER_HEIGHT = 1.0D;
+    private static final double CYLINDER_MAX_RADIUS = 10.0D;
+    private static final double CYLINDER_EXPANSION_PER_TICK = 2.0D / 20.0D;
+>>>>>>> theirs
+    private static final double INITIAL_CYLINDER_RADIUS = CYLINDER_EXPANSION_PER_TICK;
     private static final int SHAKE_DURATION_TICKS = 12;
-    private static final float SHAKE_STRENGTH = 1.25f;
+    private static final float SHAKE_STRENGTH = 1.25F;
     private static final int BLUR_DURATION_TICKS = 20;
-    private static final double IMPACT_EFFECT_RADIUS = 10.0;
+    private static final double IMPACT_EFFECT_RADIUS = 50.0D;
 
-    public SmokeBombItem(Properties properties) {
+    public SmokeBombItem(Item.Properties properties) {
         super(properties);
     }
 
@@ -60,104 +79,69 @@ public class SmokeBombItem extends Item {
     @Nonnull
     public InteractionResultHolder<ItemStack> use(@Nonnull Level level, @Nonnull Player player, @Nonnull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
+
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSoundEvents.SMOKE_BOMB_USE.get(), SoundSource.PLAYERS, 0.8F,
+                0.7F + level.getRandom().nextFloat() * 0.4F);
+
+        if (!level.isClientSide) {
+            SmokeBombProjectile projectile = new SmokeBombProjectile(level, player);
+            projectile.setItem(stack.copyWithCount(1));
+            projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+            level.addFreshEntity(projectile);
+        }
+
+        level.gameEvent(player, GameEvent.PROJECTILE_SHOOT, player.blockPosition());
+        player.awardStat(Stats.ITEM_USED.get(this));
+
+        if (!player.getAbilities().instabuild) {
+            stack.shrink(1);
+        }
+
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
-    @Override
-    public void releaseUsing(@Nonnull ItemStack stack, @Nonnull Level level, @Nonnull LivingEntity entity, int timeLeft) {
-        if (!(entity instanceof Player player)) {
-            return;
+    public static void explode(Level level, @Nullable LivingEntity owner, Vec3 hitPos) {
+        RandomSource random = level.getRandom();
+        Vec3 hemisphereCenter = hitPos.add(0.0D, PARTICLE_OFFSET_Y, 0.0D);
+        BlockPos basePos = BlockPos.containing(hitPos);
+        if (!level.getBlockState(basePos).isAir()) {
+            basePos = basePos.above();
         }
-        int usedTicks = getUseDuration(stack) - timeLeft;
-        if (usedTicks <= QUICK_THRESHOLD_TICKS) {
-            deploySmoke(level, player);
-            if (!level.isClientSide && !player.getAbilities().instabuild) {
-                stack.shrink(1);
-            }
-        }
-    }
+        Vec3 cylinderBase = Vec3.atBottomCenterOf(basePos);
 
-    private void deploySmoke(Level level, LivingEntity user) {
-        Vec3 pos = user.position();
-        RandomSource random = level.random;
-        Vec3 hemisphereCenter = new Vec3(pos.x, user.getY() + user.getEyeHeight() + PARTICLE_OFFSET_Y - 1.0, pos.z);
-        BlockPos blockPos = user.blockPosition();
-        Vec3 cylinderBase = Vec3.atBottomCenterOf(blockPos);
-        if (level instanceof ServerLevel serverLevel) {
-            for (int i = 0; i < SERVER_POOF_BURST; ++i) {
+        if (level instanceof ServerLevel server) {
+            for (int index = 0; index < SERVER_POOF_BURST; ++index) {
                 Vec3 spawnPos = hemisphereCenter.add(sampleHemisphereOffset(random));
-                serverLevel.sendParticles(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0, 0.0, 0.0, 0.0);
+                server.sendParticles(ParticleTypes.POOF, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
-            spawnCylinderParticles(serverLevel, cylinderBase, SERVER_CYLINDER_PARTICLES, random);
-            SmokeEmitterTicker.addEmitter(serverLevel, hemisphereCenter, cylinderBase);
+
+            spawnCylinderParticles(server, cylinderBase, SERVER_CYLINDER_PARTICLES, random, INITIAL_CYLINDER_RADIUS);
+            SmokeEmitterTicker.addEmitter(server, cylinderBase);
+
             S2CSmokeBombImpact impact = new S2CSmokeBombImpact(SHAKE_DURATION_TICKS, SHAKE_STRENGTH, BLUR_DURATION_TICKS);
             double radiusSq = IMPACT_EFFECT_RADIUS * IMPACT_EFFECT_RADIUS;
-            for (ServerPlayer serverPlayer : serverLevel.players()) {
-                if (serverPlayer.level() != serverLevel) {
-                    continue;
-                }
-                if (serverPlayer.distanceToSqr(hemisphereCenter.x, hemisphereCenter.y, hemisphereCenter.z) > radiusSq) {
+            for (ServerPlayer serverPlayer : server.players()) {
+                if (serverPlayer.level() != server || serverPlayer.distanceToSqr(hemisphereCenter) > radiusSq) {
                     continue;
                 }
                 StealthChannel.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), impact);
             }
-            serverLevel.gameEvent(user, GameEvent.ITEM_INTERACT_FINISH, pos);
-            serverLevel.playSound(null, pos.x, user.getY(), pos.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.8f,
-                    0.7f + random.nextFloat() * 0.4f);
+
+            server.gameEvent(owner, GameEvent.PROJECTILE_LAND, basePos);
+            server.playSound(null, hitPos.x, hitPos.y, hitPos.z, ModSoundEvents.SMOKE_BOMB_CRACK.get(), SoundSource.PLAYERS, 0.8F,
+                    0.7F + random.nextFloat() * 0.4F);
             return;
         }
 
-        for (int i = 0; i < CLIENT_POOF_BURST; ++i) {
+        for (int index = 0; index < CLIENT_POOF_BURST; ++index) {
             Vec3 spawnPos = hemisphereCenter.add(sampleHemisphereOffset(random));
-            double ySpeed = 0.01 + random.nextDouble() * 0.01;
-            level.addParticle(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, ySpeed, 0.0);
+            level.addParticle(ParticleTypes.POOF, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, 0.01D + random.nextDouble() * 0.01D, 0.0D);
         }
-        spawnCylinderParticles(level, cylinderBase, CLIENT_CYLINDER_PARTICLES, random);
-        SmokeEmitterTicker.addEmitter(level, hemisphereCenter, cylinderBase);
-        level.playLocalSound(pos.x, user.getY(), pos.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.8f,
-                0.7f + random.nextFloat() * 0.4f, false);
-    }
 
-    private static void spawnCylinderParticles(Level level, Vec3 base, int count, RandomSource random) {
-        if (count <= 0) {
-            return;
-        }
-        if (level instanceof ServerLevel serverLevel) {
-            for (int i = 0; i < count; ++i) {
-                Vec3 spawnPos = base.add(sampleCylinderOffset(random));
-                serverLevel.sendParticles(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0, 0.0, 0.0, 0.0);
-            }
-            return;
-        }
-        for (int i = 0; i < count; ++i) {
-            Vec3 spawnPos = base.add(sampleCylinderOffset(random));
-            double ySpeed = 0.01 + random.nextDouble() * 0.01;
-            level.addParticle(ParticleTypes.CLOUD, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, ySpeed, 0.0);
-        }
-    }
-
-    private static Vec3 sampleHemisphereOffset(RandomSource random) {
-        double x;
-        double y;
-        double z;
-        double lengthSquared;
-        do {
-            x = random.nextDouble() * 2.0 - 1.0;
-            y = random.nextDouble();
-            z = random.nextDouble() * 2.0 - 1.0;
-            lengthSquared = x * x + y * y + z * z;
-        } while (lengthSquared > 1.0);
-        return new Vec3(x * HEMISPHERE_RADIUS, y * HEMISPHERE_RADIUS, z * HEMISPHERE_RADIUS);
-    }
-
-    private static Vec3 sampleCylinderOffset(RandomSource random) {
-        double angle = random.nextDouble() * Math.PI * 2.0;
-        double radius = Math.sqrt(random.nextDouble()) * CYLINDER_RADIUS;
-        double x = Math.cos(angle) * radius;
-        double z = Math.sin(angle) * radius;
-        double y = random.nextDouble() * CYLINDER_HEIGHT;
-        return new Vec3(x, y, z);
+        spawnCylinderParticles(level, cylinderBase, CLIENT_CYLINDER_PARTICLES, random, INITIAL_CYLINDER_RADIUS);
+        SmokeEmitterTicker.addEmitter(level, cylinderBase);
+        level.playLocalSound(hitPos.x, hitPos.y, hitPos.z, ModSoundEvents.SMOKE_BOMB_CRACK.get(), SoundSource.PLAYERS, 0.8F,
+                0.7F + random.nextFloat() * 0.4F, false);
     }
 
     @Override
@@ -171,15 +155,89 @@ public class SmokeBombItem extends Item {
         return 72000;
     }
 
-    @Mod.EventBusSubscriber(modid = com.yourname.assassinsoath.AssassinsOath.MODID)
+    private static void spawnCylinderParticles(Level level, Vec3 base, int count, RandomSource random, double radius) {
+        if (count <= 0 || radius <= 0.0D) {
+            return;
+        }
+
+        if (level instanceof ServerLevel server) {
+            for (int index = 0; index < count; ++index) {
+<<<<<<< ours
+                Vec3 spawnPos = base.add(sampleCylinderOffset(random, radius, CYLINDER_HEIGHT));
+=======
+                Vec3 spawnPos = base.add(sampleLogarithmicCylinderOffset(random, radius, CYLINDER_HEIGHT));
+>>>>>>> theirs
+                server.sendParticles(ParticleTypes.POOF, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            }
+            return;
+        }
+
+        for (int index = 0; index < count; ++index) {
+<<<<<<< ours
+            Vec3 spawnPos = base.add(sampleCylinderOffset(random, radius, CYLINDER_HEIGHT));
+=======
+            Vec3 spawnPos = base.add(sampleLogarithmicCylinderOffset(random, radius, CYLINDER_HEIGHT));
+>>>>>>> theirs
+            double ySpeed = 0.01D + random.nextDouble() * 0.01D;
+            level.addParticle(ParticleTypes.POOF, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, ySpeed, 0.0D);
+        }
+    }
+
+    private static Vec3 sampleHemisphereOffset(RandomSource random) {
+        double x;
+        double y;
+        double z;
+        do {
+            x = random.nextDouble() * 2.0D - 1.0D;
+            y = random.nextDouble();
+            z = random.nextDouble() * 2.0D - 1.0D;
+        } while (x * x + y * y + z * z > 1.0D);
+        return new Vec3(x * HEMISPHERE_HORIZONTAL_RADIUS, y * HEMISPHERE_VERTICAL_RADIUS, z * HEMISPHERE_HORIZONTAL_RADIUS);
+    }
+
+<<<<<<< ours
+    private static Vec3 sampleCylinderOffset(RandomSource random, double radius, double height) {
+        if (radius <= 0.0D) {
+            return new Vec3(0.0D, random.nextDouble() * height, 0.0D);
+        }
+        double angle = random.nextDouble() * (Math.PI * 2.0D);
+        double radial = Math.sqrt(random.nextDouble()) * radius;
+        double x = Math.cos(angle) * radial;
+        double z = Math.sin(angle) * radial;
+        double y = random.nextDouble() * height;
+        return new Vec3(x, y, z);
+=======
+    private static Vec3 sampleLogarithmicCylinderOffset(RandomSource random, double radius, double height) {
+        if (radius <= 0.0D) {
+            return new Vec3(0.0D, random.nextDouble() * height, 0.0D);
+        }
+        for (int attempt = 0; attempt < 12; ++attempt) {
+            double angle = random.nextDouble() * (Math.PI * 2.0D);
+            double sqrtRand = Math.sqrt(random.nextDouble());
+            double radial = sqrtRand * radius;
+            double normalized = Math.min(1.0D, radial / radius);
+            double density = 1.0D - Math.log1p((Math.E - 1.0D) * normalized);
+            if (random.nextDouble() > density) {
+                continue;
+            }
+            double x = Math.cos(angle) * radial;
+            double z = Math.sin(angle) * radial;
+            double y = random.nextDouble() * height;
+            return new Vec3(x, y, z);
+        }
+        return new Vec3(0.0D, random.nextDouble() * height, 0.0D);
+>>>>>>> theirs
+    }
+
+    @Mod.EventBusSubscriber(modid = AssassinsOath.MODID)
     private static final class SmokeEmitterTicker {
         private static final Map<Level, List<SmokeEmitter>> ACTIVE_EMITTERS = new IdentityHashMap<>();
 
         private SmokeEmitterTicker() {
         }
 
-        static void addEmitter(Level level, Vec3 center, Vec3 cylinderBase) {
-            ACTIVE_EMITTERS.computeIfAbsent(level, ignored -> new ArrayList<>()).add(new SmokeEmitter(center, cylinderBase));
+        static void addEmitter(Level level, Vec3 cylinderBase) {
+            ACTIVE_EMITTERS.computeIfAbsent(level, ignored -> new ArrayList<>()).add(new SmokeEmitter(cylinderBase));
         }
 
         @SubscribeEvent
@@ -207,50 +265,60 @@ public class SmokeBombItem extends Item {
     }
 
     private static final class SmokeEmitter {
-        private final Vec3 center;
         private final Vec3 cylinderBase;
         private final RandomSource random = RandomSource.create();
         private int ticksRemaining = EMITTER_DURATION_TICKS;
+        private double currentRadius = 0.0D;
 
-        private SmokeEmitter(Vec3 center, Vec3 cylinderBase) {
-            this.center = center;
+        private SmokeEmitter(Vec3 cylinderBase) {
             this.cylinderBase = cylinderBase;
         }
 
         private void tick(Level level) {
-            if (ticksRemaining-- <= 0) {
+            if (this.ticksRemaining-- <= 0) {
                 return;
             }
-            if (level instanceof ServerLevel serverLevel) {
-                spawnServerParticles(serverLevel, ParticleTypes.CLOUD, SERVER_POOF_PER_TICK, 0.0);
-                if (cylinderBase != null) {
-                    spawnCylinderParticles(serverLevel, cylinderBase, SERVER_CYLINDER_PER_TICK, random);
-                }
+
+            this.currentRadius = Math.min(this.currentRadius + CYLINDER_EXPANSION_PER_TICK, CYLINDER_MAX_RADIUS);
+
+            if (level instanceof ServerLevel server) {
+                spawnServerCylinderParticles(server, ParticleTypes.POOF, SERVER_POOF_PER_TICK, this.currentRadius);
             } else {
-                spawnClientParticles(level, ParticleTypes.CLOUD, CLIENT_POOF_PER_TICK, 0.01, 0.01);
-                if (cylinderBase != null) {
-                    spawnCylinderParticles(level, cylinderBase, CLIENT_CYLINDER_PER_TICK, random);
-                }
+                spawnClientCylinderParticles(level, ParticleTypes.POOF, CLIENT_POOF_PER_TICK, this.currentRadius, 0.01D, 0.01D);
             }
         }
 
-        private void spawnServerParticles(ServerLevel serverLevel, ParticleOptions type, int count, double speed) {
-            for (int i = 0; i < count; ++i) {
-                Vec3 spawnPos = center.add(sampleHemisphereOffset(random));
-                serverLevel.sendParticles(type, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0, 0.0, 0.0, speed);
+        private void spawnServerCylinderParticles(ServerLevel server, ParticleOptions type, int count, double radius) {
+            if (count <= 0 || radius <= 0.0D) {
+                return;
+            }
+            for (int index = 0; index < count; ++index) {
+<<<<<<< ours
+                Vec3 spawnPos = this.cylinderBase.add(sampleCylinderOffset(this.random, radius, CYLINDER_HEIGHT));
+=======
+                Vec3 spawnPos = this.cylinderBase.add(sampleLogarithmicCylinderOffset(this.random, radius, CYLINDER_HEIGHT));
+>>>>>>> theirs
+                server.sendParticles(type, spawnPos.x, spawnPos.y, spawnPos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
         }
 
-        private void spawnClientParticles(Level level, ParticleOptions type, int count, double baseSpeed, double speedRange) {
-            for (int i = 0; i < count; ++i) {
-                Vec3 spawnPos = center.add(sampleHemisphereOffset(random));
-                double ySpeed = baseSpeed + random.nextDouble() * speedRange;
-                level.addParticle(type, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, ySpeed, 0.0);
+        private void spawnClientCylinderParticles(Level level, ParticleOptions type, int count, double radius, double baseSpeed, double speedRange) {
+            if (count <= 0 || radius <= 0.0D) {
+                return;
+            }
+            for (int index = 0; index < count; ++index) {
+<<<<<<< ours
+                Vec3 spawnPos = this.cylinderBase.add(sampleCylinderOffset(this.random, radius, CYLINDER_HEIGHT));
+=======
+                Vec3 spawnPos = this.cylinderBase.add(sampleLogarithmicCylinderOffset(this.random, radius, CYLINDER_HEIGHT));
+>>>>>>> theirs
+                double ySpeed = baseSpeed + this.random.nextDouble() * speedRange;
+                level.addParticle(type, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, ySpeed, 0.0D);
             }
         }
 
         private boolean isFinished() {
-            return ticksRemaining <= 0;
+            return this.ticksRemaining <= 0;
         }
     }
 }

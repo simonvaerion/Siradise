@@ -1,6 +1,7 @@
 package com.yourname.assassinsoath.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -13,8 +14,8 @@ import net.minecraft.util.Mth;
 public class SmokePuffParticle extends TextureSheetParticle {
     private final SpriteSet sprites;
 
-    private SmokePuffParticle(ClientLevel level, double x, double y, double z,
-                               double xd, double yd, double zd, SpriteSet sprites) {
+    protected SmokePuffParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
+                                 SpriteSet sprites) {
         super(level, x, y, z, xd, yd, zd);
         this.sprites = sprites;
         this.friction = 0.92F;
@@ -23,7 +24,7 @@ public class SmokePuffParticle extends TextureSheetParticle {
         this.lifetime = 40 + this.random.nextInt(20);
         this.alpha = 0.0F;
         this.setColor(1.0F, 1.0F, 1.0F);
-        this.setSpriteFromAge(sprites);
+        this.pickSprite(sprites);
         this.xd += xd;
         this.yd += yd;
         this.zd += zd;
@@ -36,7 +37,7 @@ public class SmokePuffParticle extends TextureSheetParticle {
             float ageProgress = (float) this.age / (float) this.lifetime;
             this.alpha = 0.1F + 0.9F * (1.0F - ageProgress);
             this.quadSize *= 1.0025F;
-            this.setSpriteFromAge(this.sprites);
+            this.pickSprite(this.sprites);
         }
     }
 
@@ -46,12 +47,12 @@ public class SmokePuffParticle extends TextureSheetParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, net.minecraft.client.Camera camera, float partialTicks) {
+    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
         this.alpha = Mth.clamp(this.alpha, 0.0F, 1.0F);
         super.render(buffer, camera, partialTicks);
     }
 
-    public static final class Provider implements ParticleProvider<SimpleParticleType> {
+    public static class Provider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 
         public Provider(SpriteSet sprites) {

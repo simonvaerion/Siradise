@@ -81,7 +81,7 @@ extends Item {
     private static final int SHAKE_DURATION_TICKS = 12;
     private static final float SHAKE_STRENGTH = 1.25f;
     private static final int BLUR_DURATION_TICKS = 20;
-    private static final double IMPACT_EFFECT_RADIUS = 10.0;
+    private static final double IMPACT_EFFECT_RADIUS = 50.0;
 
     public SmokeBombItem(Item.Properties properties) {
         super(properties);

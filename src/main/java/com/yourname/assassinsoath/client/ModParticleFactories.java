@@ -1,7 +1,9 @@
 package com.yourname.assassinsoath.client;
 
 import com.yourname.assassinsoath.AssassinsOath;
+import com.yourname.assassinsoath.client.particle.SmokeBombParticle;
 import com.yourname.assassinsoath.client.particle.SmokePuffParticle;
+import com.yourname.assassinsoath.registry.ModParticleTypes;
 import com.yourname.assassinsoath.registry.ModParticles;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -16,5 +18,6 @@ public final class ModParticleFactories {
     @SubscribeEvent
     public static void registerFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.SMOKE_PUFF.get(), SmokePuffParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.SMOKE_BOMB.get(), SmokeBombParticle.Provider::new);
     }
 }
